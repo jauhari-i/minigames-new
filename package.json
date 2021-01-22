@@ -1,0 +1,67 @@
+{
+  "name": "minigames-infiniteroom",
+  "version": "1.0.0",
+  "description": "Minigames API",
+  "main": "./src/bin/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "del /s /q dist && babel -d ./dist ./src",
+    "start": "node ./dist/bin/app.js",
+    "dev": "nodemon  --exec babel-node ./src/bin/app.js",
+    "prelint:js": "npm run format:all",
+    "lint:js": "eslint src/**/*.js",
+    "format:all": "prettier --write src/**/*.js"
+  },
+  "keywords": [
+    "codebase"
+  ],
+  "pre-commit": [
+    "lint:js"
+  ],
+  "author": "Irfan Jauhari",
+  "license": "ISC",
+  "dependencies": {
+    "babel-eslint": "^10.1.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "cloudinary": "^1.23.0",
+    "confidence": "^5.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "eslint": "^7.17.0",
+    "express": "^4.17.1",
+    "express-basic-auth": "^1.2.0",
+    "express-validator": "^6.9.2",
+    "faker": "^5.1.0",
+    "fs": "0.0.1-security",
+    "handlebars": "^4.7.6",
+    "http": "0.0.1-security",
+    "http-error": "0.0.6",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.29.1",
+    "mongoose": "^5.11.9",
+    "mongoose-timestamp": "^0.6.0",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.2",
+    "multer-storage-cloudinary": "^4.0.0",
+    "mysql": "^2.18.1",
+    "node-mailer": "^0.1.1",
+    "nodemailer": "^6.4.17",
+    "paginate-info": "^1.0.4",
+    "path": "^0.12.7",
+    "socket.io": "^3.1.0",
+    "uuid": "^8.3.2",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.12.10",
+    "@babel/core": "^7.12.10",
+    "@babel/node": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "eslint-config-prettier": "^3.4.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "nodemon": "^2.0.6",
+    "pre-commit": "^1.2.2",
+    "prettier": "^1.15.3"
+  }
+}
