@@ -3,7 +3,7 @@ import User from '../../../models/Users'
 const ListUser = async () => {
   try {
     const user = await User.find()
-    if (user === []) {
+    if (user.length === 0) {
       return {
         success: true,
         statusCode: 200,

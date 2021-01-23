@@ -38,16 +38,19 @@ export const verifyToken = async (req, res, next) => {
 
   const token = getToken(req.headers)
   if (!token) {
-    return handleError({ statusCode: 401, message: 'Token is not valid!' })
+    return handleError({ statusCode: 401, message: 'Token is not valid!' }, res)
   }
   let decodedToken
   try {
     decodedToken = await jwt.verify(token, publicKey, verifyOptions)
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
-      return handleError({ statusCode: 401, message: 'Access token expired!' })
+      return handleError(
+        { statusCode: 401, message: 'Access token expired!' },
+        res
+      )
     }
-    return handleError({ statusCode: 401, message: 'Token is not valid!' })
+    return handleError({ statusCode: 401, message: 'Token is not valid!' }, res)
   }
   const userId = decodedToken.sub
   req.userId = userId
@@ -62,19 +65,22 @@ export const verifyTokenAdmin = async (req, res, next) => {
 
   const token = getToken(req.headers)
   if (!token) {
-    return handleError({ statusCode: 401, message: 'Token is not valid!' })
+    return handleError({ statusCode: 401, message: 'Token is not valid!' }, res)
   }
   let decodedToken
   try {
     decodedToken = await jwt.verify(token, publicKey, verifyOptions)
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
-      return handleError({ statusCode: 401, message: 'Access token expired!' })
+      return handleError(
+        { statusCode: 401, message: 'Access token expired!' },
+        res
+      )
     }
-    return handleError({ statusCode: 401, message: 'Token is not valid!' })
+    return handleError({ statusCode: 401, message: 'Token is not valid!' }, res)
   }
   if (decodedToken.role === 0) {
-    return handleError({ statusCode: 403, message: 'Access Denied!' })
+    return handleError({ statusCode: 403, message: 'Access Denied!' }, res)
   } else {
     const adminId = decodedToken.sub
     req.adminId = adminId
@@ -90,19 +96,22 @@ export const verifyTokenSuperAdmin = async (req, res, next) => {
 
   const token = getToken(req.headers)
   if (!token) {
-    return handleError({ statusCode: 401, message: 'Token is not valid!' })
+    return handleError({ statusCode: 401, message: 'Token is not valid!' }, res)
   }
   let decodedToken
   try {
     decodedToken = await jwt.verify(token, publicKey, verifyOptions)
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
-      return handleError({ statusCode: 401, message: 'Access token expired!' })
+      return handleError(
+        { statusCode: 401, message: 'Access token expired!' },
+        res
+      )
     }
-    return handleError({ statusCode: 401, message: 'Token is not valid!' })
+    return handleError({ statusCode: 401, message: 'Token is not valid!' }, res)
   }
   if (decodedToken.role !== 2) {
-    return handleError({ statusCode: 403, message: 'Access Denied!' })
+    return handleError({ statusCode: 403, message: 'Access Denied!' }, res)
   } else {
     const adminId = decodedToken.sub
     req.adminId = adminId

@@ -27,11 +27,14 @@ const controller = {
     } else {
       const { name, email, username, password, confirmPassword } = req.body
       if (password !== confirmPassword) {
-        handleError({
-          success: false,
-          statusCode: 400,
-          message: 'Password confirmation not match',
-        })
+        handleError(
+          {
+            success: false,
+            statusCode: 400,
+            message: 'Password confirmation not match',
+          },
+          res
+        )
       } else {
         const query = await RegisterUser({ name, email, username, password })
 

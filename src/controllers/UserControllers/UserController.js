@@ -79,11 +79,14 @@ const controller = {
     } else {
       const { oldPassword, newPassword, confirmPassword } = req.body
       if (newPassword !== confirmPassword) {
-        handleError({
-          success: false,
-          statusCode: 400,
-          message: 'Password confirmation not match',
-        })
+        handleError(
+          {
+            success: false,
+            statusCode: 400,
+            message: 'Password confirmation not match',
+          },
+          res
+        )
       } else {
         const payload = {
           oldPassword,

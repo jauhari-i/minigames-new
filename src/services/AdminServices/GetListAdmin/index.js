@@ -3,7 +3,7 @@ import Admin from '../../../models/Admin'
 const ListAdmin = async () => {
   try {
     const list = await Admin.find({ level: 0 })
-    if (list === []) {
+    if (list.length === 0) {
       return {
         success: true,
         statusCode: 200,
