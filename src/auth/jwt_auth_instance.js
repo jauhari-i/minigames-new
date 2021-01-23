@@ -53,3 +53,59 @@ export const verifyToken = async (req, res, next) => {
   req.userId = userId
   next()
 }
+
+export const verifyTokenAdmin = async (req, res, next) => {
+  const publicKey = fs.readFileSync(getConfig('/publicKey'), 'utf8')
+  const verifyOptions = {
+    algorithm: 'RS256',
+  }
+
+  const token = getToken(req.headers)
+  if (!token) {
+    return handleError({ statusCode: 401, message: 'Token is not valid!' })
+  }
+  let decodedToken
+  try {
+    decodedToken = await jwt.verify(token, publicKey, verifyOptions)
+  } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      return handleError({ statusCode: 401, message: 'Access token expired!' })
+    }
+    return handleError({ statusCode: 401, message: 'Token is not valid!' })
+  }
+  if (decodedToken.role === 0) {
+    return handleError({ statusCode: 403, message: 'Access Denied!' })
+  } else {
+    const adminId = decodedToken.sub
+    req.adminId = adminId
+    next()
+  }
+}
+
+export const verifyTokenSuperAdmin = async (req, res, next) => {
+  const publicKey = fs.readFileSync(getConfig('/publicKey'), 'utf8')
+  const verifyOptions = {
+    algorithm: 'RS256',
+  }
+
+  const token = getToken(req.headers)
+  if (!token) {
+    return handleError({ statusCode: 401, message: 'Token is not valid!' })
+  }
+  let decodedToken
+  try {
+    decodedToken = await jwt.verify(token, publicKey, verifyOptions)
+  } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      return handleError({ statusCode: 401, message: 'Access token expired!' })
+    }
+    return handleError({ statusCode: 401, message: 'Token is not valid!' })
+  }
+  if (decodedToken.role !== 2) {
+    return handleError({ statusCode: 403, message: 'Access Denied!' })
+  } else {
+    const adminId = decodedToken.sub
+    req.adminId = adminId
+    next()
+  }
+}

@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "del /s /q dist && babel -d ./dist ./src",
     "start": "node ./dist/bin/app.js",
-    "dev": "nodemon  --exec babel-node ./src/bin/app.js",
+    "dev": "nodemon  --exec npm run server",
+    "server": "npm run format:all && babel-node ./src/bin/app.js",
     "prelint:js": "npm run format:all",
     "lint:js": "eslint src/**/*.js",
     "format:all": "prettier --write src/**/*.js"

@@ -8,6 +8,7 @@ const {
     LoginUser,
     VerifyUser,
     RequestEmaillVerification,
+    LoginAdmin,
   },
 } = services
 
@@ -111,6 +112,33 @@ const controller = {
       )
     } else {
       const query = await RequestEmaillVerification(token)
+      if (query) {
+        if (!query.success) {
+          handleError(query, res)
+        } else {
+          res.status(query.statusCode).json(query)
+        }
+      } else {
+        handleError({ statusCode: 500, message: 'Internal server error' }, res)
+      }
+    }
+  },
+  loginAdmin: async (req, res) => {
+    const validationError = validationResult(req)
+    if (validationError.errors.length) {
+      handleError(
+        {
+          statusCode: 400,
+          message: 'Input error',
+          errors: validationError.errors,
+        },
+        res
+      )
+    } else {
+      const { email, password } = req.body
+
+      const query = await LoginAdmin({ email, password })
+
       if (query) {
         if (!query.success) {
           handleError(query, res)
