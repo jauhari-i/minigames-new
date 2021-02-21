@@ -5,7 +5,7 @@
   "main": "./src/bin/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "del /s /q dist && babel -d ./dist ./src --copy-files",
+    "build": "rm -rf dist && babel -d ./dist ./src --copy-files",
     "start": "node ./dist/bin/app.js",
     "dev": "nodemon  --exec npm run server",
     "server": "npm run format:all && babel-node ./src/bin/app.js",
