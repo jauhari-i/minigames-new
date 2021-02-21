@@ -12,7 +12,10 @@ const UpdatePassword = async (id, data) => {
         message: 'Admin not found',
       }
     } else {
-      const isMatch = await bcryptjs.compareSync(oldPassword, admin.password)
+      const isMatch = await bcryptjs.compareSync(
+        oldPassword,
+        admin.adminPassword
+      )
       if (!isMatch) {
         throw {
           success: false,

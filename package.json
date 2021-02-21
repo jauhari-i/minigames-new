@@ -5,13 +5,14 @@
   "main": "./src/bin/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "del /s /q dist && babel -d ./dist ./src",
+    "build": "del /s /q dist && babel -d ./dist ./src --copy-files",
     "start": "node ./dist/bin/app.js",
     "dev": "nodemon  --exec npm run server",
     "server": "npm run format:all && babel-node ./src/bin/app.js",
     "prelint:js": "npm run format:all",
     "lint:js": "eslint src/**/*.js",
-    "format:all": "prettier --write src/**/*.js"
+    "format:all": "prettier --write src/**/*.js",
+    "format:dist": "prettier --write dist/**/*.js"
   },
   "keywords": [
     "codebase"
@@ -22,6 +23,7 @@
   "author": "Irfan Jauhari",
   "license": "ISC",
   "dependencies": {
+    "@babel/runtime": "^7.12.5",
     "babel-eslint": "^10.1.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
@@ -58,6 +60,7 @@
     "@babel/cli": "^7.12.10",
     "@babel/core": "^7.12.10",
     "@babel/node": "^7.12.10",
+    "@babel/plugin-transform-runtime": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
     "eslint-config-prettier": "^3.4.0",
     "eslint-plugin-prettier": "^3.0.1",

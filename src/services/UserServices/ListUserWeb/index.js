@@ -13,9 +13,9 @@ const ListWeb = async () => {
     } else {
       const dataUser = user.map(item => ({
         userId: item.userId,
-        name: user.name,
-        username: user.username,
-        userImage: user.userImage,
+        name: item.name,
+        username: item.username,
+        userImage: item.userImage,
       }))
       return {
         success: true,

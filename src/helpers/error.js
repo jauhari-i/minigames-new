@@ -7,10 +7,11 @@ export default class ErrorConstructor extends Error {
 }
 
 export const handleError = (err, res) => {
-  const { statusCode, message } = err
+  const { statusCode, message, errors } = err
   return res.status(statusCode).json({
     status: 'error',
     statusCode,
     message,
+    error: errors && errors,
   })
 }

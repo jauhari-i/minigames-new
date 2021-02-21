@@ -28,7 +28,7 @@ const LoginAdmin = async data => {
 
         if (token) {
           const updateLastLogin = await Admin.findOneAndUpdate(
-            { userId: admin.adminId },
+            { adminId: admin.adminId },
             {
               lastLogin: Date.now(),
             }

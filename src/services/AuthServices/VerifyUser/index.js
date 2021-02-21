@@ -44,6 +44,13 @@ const VerifyUser = async token => {
       }
     }
   } catch (error) {
+    if (!error.statusCode) {
+      return {
+        success: false,
+        statusCode: 500,
+        message: error.message,
+      }
+    }
     return error
   }
 }

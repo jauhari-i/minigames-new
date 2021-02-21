@@ -13,17 +13,17 @@ const ListUser = async () => {
     } else {
       const dataUser = user.map(item => ({
         userId: item.userId,
-        name: user.name,
-        username: user.username,
-        email: user.email,
-        userImage: user.userImage,
-        verified: user.isVerified,
-        verifiedAt: user.verifiedAt,
-        city: user.city,
-        province: user.province,
-        birthday: user.birthday,
-        online: user.online,
-        phoneNumber: user.phoneNumber,
+        name: item.name,
+        username: item.username,
+        email: item.email,
+        userImage: item.userImage,
+        verified: item.isVerified,
+        verifiedAt: item.verifiedAt,
+        city: item.city,
+        province: item.province,
+        birthday: item.birthday,
+        online: item.online,
+        phoneNumber: item.phoneNumber,
       }))
       return {
         success: true,
