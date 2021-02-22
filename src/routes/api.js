@@ -1,12 +1,10 @@
 import { Router } from 'express'
 import controllers from '../controllers'
 import { app as basicAuth } from '../auth/basic_auth_instance'
-import { v4 as uuid } from 'uuid'
 import {
   verifyToken,
   verifyTokenAdmin,
   verifyTokenSuperAdmin,
-  generateToken,
 } from '../auth/jwt_auth_instance'
 import {
   registerCheck,
@@ -48,23 +46,6 @@ const {
   },
   GameController: { addGameHandler },
 } = controllers
-
-// Generate Token
-router.get('/generate/token/:role', async (req, res) => {
-  const payload = {
-    sub: uuid(),
-    role: Number(req.params.role),
-    email: 'mail@mail.com',
-  }
-  const token = await generateToken(payload)
-  res.status(200).json({
-    success: true,
-    data: {
-      token,
-    },
-    role: req.params.role,
-  })
-})
 
 // =============================
 // authentication
