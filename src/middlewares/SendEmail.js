@@ -31,7 +31,7 @@ export const sendVerificationEmail = async (email, token) => {
     const localData = {
       token: token,
       email: email,
-      link: 'http://localhost:9000/api/user/verify' + token,
+      link: 'http://localhost:9000/api/user/verify/' + token,
       linkRequest: 'http://localhost:9000/api/user/request' + token,
     }
     const htmlToSend = template(mode === 'dev' ? localData : data)

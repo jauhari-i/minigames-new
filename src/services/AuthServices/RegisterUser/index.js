@@ -3,6 +3,8 @@ import bcryptjs from 'bcryptjs'
 import { v4 as uuid } from 'uuid'
 import jsonwebtoken from 'jsonwebtoken'
 import { sendVerificationEmail } from '../../../middlewares/SendEmail'
+import { defaultImage } from '../../../constants/defaultImage'
+import { Uploader } from '../../../middlewares/UploadImage'
 
 const RegisterUser = async data => {
   const { name, email, username, password } = data
@@ -15,12 +17,14 @@ const RegisterUser = async data => {
         message: 'Internal server error, Failed to secure password',
       }
     } else {
+      const img = await Uploader(defaultImage)
       const newUser = await Users.create({
         userId: uuid(),
         name,
         email,
         username,
         password: encryptedPassword,
+        userImage: img,
       })
       if (!newUser) {
         throw {
