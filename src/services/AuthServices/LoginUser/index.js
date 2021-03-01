@@ -16,6 +16,7 @@ const LoginUser = async data => {
       const passwordIsMatch = await bcryptjs.compare(password, user.password)
       if (passwordIsMatch) {
         const payload = {
+          role: 0,
           sub: user.userId,
           email: user.email,
         }
