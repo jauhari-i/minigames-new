@@ -44,7 +44,18 @@ const {
     updatePasswordHandler,
     updateProfileHandler,
   },
-  GameController: { addGameHandler },
+  GameController: {
+    addGameHandler,
+    activateGameHandler,
+    deleteGameHandler,
+    detailGameHandler,
+    disableGameHandler,
+    listGameAdminHandler,
+    updateGameHandler,
+    detailGameWebHandler,
+    listGameUserHandler,
+    listGameWebHandler,
+  },
 } = controllers
 
 // =============================
@@ -77,6 +88,19 @@ router.delete('/user/delete/:id', verifyTokenAdmin, deleteUser)
 // =============================
 
 router.post('/game/create', [verifyTokenAdmin, addGame], addGameHandler)
+router.get('/game/list', verifyTokenAdmin, listGameAdminHandler)
+router.get('/game/detail/:gameId', verifyTokenAdmin, detailGameHandler)
+router.get('/game/mygame', verifyToken, listGameUserHandler)
+router.get('/game/web/list', verifyToken, listGameWebHandler)
+router.get('/game/web/detail/:gameId', verifyToken, detailGameWebHandler)
+router.put('/game/activate/:gameId', verifyTokenAdmin, activateGameHandler)
+router.put('/game/disable/:gameId', verifyTokenAdmin, disableGameHandler)
+router.put(
+  '/game/update/:gameId',
+  [verifyTokenAdmin, addGame],
+  updateGameHandler
+)
+router.delete('/game/delete/:gameId', verifyTokenAdmin, deleteGameHandler)
 
 // =============================
 // admin
