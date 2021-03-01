@@ -15,7 +15,7 @@ const AccTransaction = async (transactionId, adminId) => {
         message: 'Transaction not found',
       }
     } else {
-      if (tr.transactionImage === {}) {
+      if (!tr.transactionImage.public_id) {
         throw {
           success: false,
           statusCode: 400,
