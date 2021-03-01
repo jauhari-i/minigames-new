@@ -183,3 +183,52 @@ export const addGame = [
     })
   }),
 ]
+
+export const editGame = [
+  check('title')
+    .not()
+    .isEmpty()
+    .withMessage('Title cannot be empty'),
+  check('price')
+    .not()
+    .isEmpty()
+    .withMessage('Price cannot be empty'),
+
+  check('poster')
+    .not()
+    .isEmpty()
+    .withMessage('Poster cannot be empty'),
+
+  check('image')
+    .not()
+    .isEmpty()
+    .withMessage('Image cannot be empty'),
+  check('rating')
+    .not()
+    .isEmpty()
+    .withMessage('Rating cannot be empty'),
+  check('discount')
+    .not()
+    .isEmpty()
+    .withMessage('Discount cannot be empty'),
+  check('difficulty')
+    .not()
+    .isEmpty()
+    .withMessage('Difficulty cannot be empty'),
+  check('capacity')
+    .not()
+    .isEmpty()
+    .withMessage('Capacity cannot be empty'),
+  check('duration')
+    .not()
+    .isEmpty()
+    .withMessage('Duration cannot be empty'),
+  check('ready')
+    .not()
+    .isEmpty()
+    .withMessage('Game status cannot be empty'),
+  check('url')
+    .not()
+    .isEmpty()
+    .withMessage('Url cannot be empty'),
+]

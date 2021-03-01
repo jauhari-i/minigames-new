@@ -12,6 +12,7 @@ import {
   changePassword,
   updateUser,
   addGame,
+  editGame,
   addAdmin,
   updateAdmin,
 } from '../helpers/validators'
@@ -97,7 +98,7 @@ router.put('/game/activate/:gameId', verifyTokenAdmin, activateGameHandler)
 router.put('/game/disable/:gameId', verifyTokenAdmin, disableGameHandler)
 router.put(
   '/game/update/:gameId',
-  [verifyTokenAdmin, addGame],
+  [verifyTokenAdmin, editGame],
   updateGameHandler
 )
 router.delete('/game/delete/:gameId', verifyTokenAdmin, deleteGameHandler)
