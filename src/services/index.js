@@ -4,6 +4,7 @@ import AdminServices from './AdminServices'
 import GameServices from './GameServices'
 import CartServices from './CartServices'
 import TransactionServices from './TransactionServices'
+import CodeServices from './CodeServices'
 
 const services = {
   AuthServices,
@@ -12,6 +13,7 @@ const services = {
   GameServices,
   CartServices,
   TransactionServices,
+  CodeServices,
 }
 
 export default services
