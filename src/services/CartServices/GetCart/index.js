@@ -6,7 +6,7 @@ import User from '../../../models/Users'
 
 const GetCart = async userId => {
   try {
-    const userCart = await Cart.findOne({ userId: userId })
+    const userCart = await Cart.findOne({ userId })
     if (!userCart) {
       const newCart = await Cart.create({
         cartId: uuid(),

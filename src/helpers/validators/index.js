@@ -253,3 +253,24 @@ export const addCart = [
     .isEmpty()
     .withMessage('Time Cannot be empty'),
 ]
+
+export const checkoutTr = [
+  check('cartId')
+    .not()
+    .isEmpty()
+    .withMessage('Cart id cannot be empty'),
+]
+
+export const rejectTr = [
+  check('reason')
+    .not()
+    .isEmpty()
+    .withMessage('Reason cannot be empty'),
+]
+
+export const uploadPayment = [
+  check('image')
+    .not()
+    .isEmpty()
+    .withMessage('Image cannot be empty'),
+]

@@ -96,6 +96,7 @@ const ListGameUser = async userId => {
       }
     }
   } catch (error) {
+    console.log(error)
     return error
   }
 }

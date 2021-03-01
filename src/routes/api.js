@@ -16,6 +16,9 @@ import {
   addAdmin,
   updateAdmin,
   addCart,
+  checkoutTr,
+  rejectTr,
+  uploadPayment,
 } from '../helpers/validators'
 
 const router = Router()
@@ -59,6 +62,16 @@ const {
     listGameWebHandler,
   },
   CartController: { addToCartHandler, getCartHandler, removeFromCartHandler },
+  TransactionController: {
+    accTransactionHandler,
+    checkoutTransctionHandler,
+    deleteTransactionHandler,
+    detailTransactionHandler,
+    listTransactionAdminHandler,
+    listTransactionUserHandler,
+    rejectTransactionHandler,
+    uploadPaymentHandler,
+  },
 } = controllers
 
 // =============================
@@ -145,6 +158,43 @@ router.put('/cart/remove/:itemId', verifyToken, removeFromCartHandler)
 // =============================
 // transaction
 // =============================
+
+router.post(
+  '/transaction/checkout',
+  [verifyToken, checkoutTr],
+  checkoutTransctionHandler
+)
+router.put(
+  '/transaction/upload/:transactionId',
+  [verifyToken, uploadPayment],
+  uploadPaymentHandler
+)
+router.put(
+  '/transaction/accept/:transactionId',
+  verifyTokenAdmin,
+  accTransactionHandler
+)
+router.put(
+  '/transaction/reject/:transactionId',
+  [verifyTokenAdmin, rejectTr],
+  rejectTransactionHandler
+)
+router.get(
+  '/transaction/list/admin',
+  verifyTokenAdmin,
+  listTransactionAdminHandler
+)
+router.get('/transaction/list/user', verifyToken, listTransactionUserHandler)
+router.get(
+  '/transaction/detail/:transactionId',
+  verifyTokenAdmin,
+  detailTransactionHandler
+)
+router.delete(
+  '/transaction/delete/:transactionId',
+  verifyTokenAdmin,
+  deleteTransactionHandler
+)
 
 // =============================
 // gameplay

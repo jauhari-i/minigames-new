@@ -18,7 +18,8 @@ const transactionSchema = new mongoose.Schema({
     default: 0,
   },
   transactionImage: {
-    type: String,
+    type: Object,
+    default: {},
   },
   paymentToken: {
     type: String,
@@ -40,7 +41,6 @@ const transactionSchema = new mongoose.Schema({
   },
   adminId: {
     type: String,
-    required: true,
   },
 })
 

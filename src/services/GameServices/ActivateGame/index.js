@@ -10,7 +10,7 @@ const ActivateGame = async gameId => {
         message: 'Game not found',
       }
     } else {
-      const updateQuery = await Game.updateOne({ gameReady: true })
+      const updateQuery = await Game.updateOne({ gameId }, { gameReady: true })
       if (!updateQuery) {
         throw {
           success: false,

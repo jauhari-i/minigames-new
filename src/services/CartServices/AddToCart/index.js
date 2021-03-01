@@ -158,7 +158,6 @@ const AddToCart = async (userId, data) => {
       }
     }
   } catch (error) {
-    console.log(error)
     return error
   }
 }
