@@ -12,11 +12,11 @@ const gameSchema = new mongoose.Schema({
     required: true,
   },
   posterImage: {
-    type: String,
+    type: Object,
     required: true,
   },
   gameImage: {
-    type: String,
+    type: Object,
     required: true,
   },
   gameDescription: {
