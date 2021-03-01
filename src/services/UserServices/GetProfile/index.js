@@ -15,7 +15,7 @@ const ProfileUser = async id => {
         name: user.name,
         username: user.username,
         email: user.email,
-        userImage: user.userImage,
+        userImage: user.userImage.secure_url,
         isVerified: user.isVerified,
         city: user.city,
         province: user.province,

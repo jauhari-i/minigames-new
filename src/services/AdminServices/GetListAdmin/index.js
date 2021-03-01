@@ -15,7 +15,7 @@ const ListAdmin = async () => {
         adminId: item.adminId,
         adminName: item.adminName,
         adminEmail: item.adminEmail,
-        adminImage: item.adminImage,
+        adminImage: item.adminImage.secure_url,
         createdAt: item.createdAt,
       }))
       return {

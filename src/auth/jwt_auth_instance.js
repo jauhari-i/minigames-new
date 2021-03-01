@@ -52,9 +52,13 @@ export const verifyToken = async (req, res, next) => {
     }
     return handleError({ statusCode: 401, message: 'Token is not valid!' }, res)
   }
-  const userId = decodedToken.sub
-  req.userId = userId
-  next()
+  if (decodedToken.role !== 0) {
+    return handleError({ statusCode: 403, message: 'Access Denied!' }, res)
+  } else {
+    const userId = decodedToken.sub
+    req.userId = userId
+    next()
+  }
 }
 
 export const verifyTokenAdmin = async (req, res, next) => {

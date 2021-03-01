@@ -1,4 +1,6 @@
 import Admin from '../../../models/Admin'
+import { DeleteImage, Uploader } from '../../../middlewares/UploadImage'
+import { isValidURL } from '../../../helpers/validateUrl'
 
 const UpdateAdmin = async (id, data) => {
   const { name, image } = data
@@ -11,11 +13,22 @@ const UpdateAdmin = async (id, data) => {
         message: 'Id admin not found',
       }
     } else {
+      let img
+      if (isValidURL(image)) {
+        img = admin.adminImage
+      } else {
+        const deleteImage = await DeleteImage(admin.adminImage.public_id)
+        if (deleteImage.result) {
+          img = await Uploader(image)
+        } else {
+          img = admin.adminImage
+        }
+      }
       const updateQuery = await Admin.updateOne(
         { adminId: admin.adminId },
         {
           adminName: name,
-          adminImage: image,
+          adminImage: img,
         }
       )
       if (updateQuery) {

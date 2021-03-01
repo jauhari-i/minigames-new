@@ -16,7 +16,7 @@ const ListUser = async () => {
         name: item.name,
         username: item.username,
         email: item.email,
-        userImage: item.userImage,
+        userImage: item.userImage.secure_url,
         verified: item.isVerified,
         verifiedAt: item.verifiedAt,
         city: item.city,

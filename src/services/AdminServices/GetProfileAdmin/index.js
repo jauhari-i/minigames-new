@@ -14,7 +14,7 @@ const ProfileAdmin = async id => {
         adminId: admin.adminId,
         adminName: admin.adminName,
         adminEmail: admin.adminEmail,
-        adminImage: admin.adminImage,
+        adminImage: admin.adminImage.secure_url,
         createdAt: admin.createdAt,
       }
       return {

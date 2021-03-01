@@ -1,4 +1,6 @@
 import Game from '../../../models/Game'
+import { DeleteImage, Uploader } from '../../../middlewares/UploadImage'
+import { isValidURL } from '../../../helpers/validateUrl'
 
 const UpdateGame = async (data, id) => {
   try {
@@ -33,10 +35,36 @@ const UpdateGame = async (data, id) => {
       } else {
         discountPrice = price
       }
+
+      let posterImg
+      let gameImg
+
+      if (isValidURL(poster)) {
+        posterImg = game.posterImage
+      } else {
+        const deletePoster = await DeleteImage(game.posterImage.public_id)
+        if (deletePoster) {
+          posterImg = await Uploader(poster)
+        } else {
+          posterImg = game.posterImage
+        }
+      }
+
+      if (isValidURL(image)) {
+        gameImg = game.gameImage
+      } else {
+        const deleteImg = await DeleteImage(game.gameImage.public_id)
+        if (deleteImg) {
+          gameImg = await Uploader(image)
+        } else {
+          gameImg = game.gameImage
+        }
+      }
+
       const doc = {
         gameTitle: title,
-        posterImage: poster,
-        gameImage: image,
+        posterImage: posterImg,
+        gameImage: gameImg,
         gameDescription: description,
         gamePrice: price,
         gameDiscount: discount ? discount : 0,

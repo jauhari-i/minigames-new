@@ -18,4 +18,10 @@ const Uploader = async imgstr => {
   return img
 }
 
-export default Uploader
+const DeleteImage = async img => {
+  const del = await Cloudinary.uploader.destroy(img)
+
+  return del
+}
+
+export { Uploader, DeleteImage }

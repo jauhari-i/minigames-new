@@ -1,6 +1,7 @@
 import Game from '../../../models/Game'
 import Admin from '../../../models/Admin'
 import { v4 as uuid } from 'uuid'
+import { Uploader } from '../../../middlewares/UploadImage'
 
 const AddGame = async (data, adminId) => {
   try {
@@ -35,11 +36,13 @@ const AddGame = async (data, adminId) => {
       } else {
         discountPrice = price
       }
+      let img = await Uploader(image)
+      let posterImg = await Uploader(poster)
       const doc = {
         gameId: uuid(),
         gameTitle: title,
-        posterImage: poster,
-        gameImage: image,
+        posterImage: posterImg,
+        gameImage: img,
         gameDescription: description,
         gamePrice: price,
         gameDiscount: discount ? discount : 0,

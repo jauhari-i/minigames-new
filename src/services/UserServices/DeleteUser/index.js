@@ -1,4 +1,5 @@
 import User from '../../../models/Users'
+import { DeleteImage } from '../../../middlewares/UploadImage'
 
 const DeleteUser = async id => {
   try {
@@ -10,8 +11,9 @@ const DeleteUser = async id => {
         message: 'User not found',
       }
     } else {
+      const deleteImg = await DeleteImage(user.userImage.public_id)
       const deleteQuery = await User.deleteOne({ userId: user.userId })
-      if (!deleteQuery) {
+      if (!deleteQuery || !deleteImg) {
         throw {
           success: false,
           statusCode: 500,

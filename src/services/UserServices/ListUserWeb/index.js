@@ -15,7 +15,7 @@ const ListWeb = async () => {
         userId: item.userId,
         name: item.name,
         username: item.username,
-        userImage: item.userImage,
+        userImage: item.userImage.secure_url,
       }))
       return {
         success: true,

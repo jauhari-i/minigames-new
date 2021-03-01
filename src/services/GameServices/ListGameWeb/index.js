@@ -22,8 +22,8 @@ const ListGameWeb = async userId => {
           return {
             gameId: item.gameId,
             gameTitle: item.gameTitle,
-            posterImage: item.posterImage,
-            gameImage: item.gameImage,
+            posterImage: item.posterImage.secure_url,
+            gameImage: item.gameImage.secure_url,
             gameDescription: item.gameDescription,
             gamePrice: item.gamePrice,
             gameDiscount: item.gameDiscount,

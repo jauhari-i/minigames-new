@@ -22,8 +22,8 @@ const DetailGameAdmin = async (gameId, userId) => {
       const gameData = {
         gameId: game.gameId,
         gameTitle: game.gameTitle,
-        posterImage: game.posterImage,
-        gameImage: game.gameImage,
+        posterImage: game.posterImage.secure_url,
+        gameImage: game.gameImage.secure_url,
         gameDescription: game.gameDescription,
         gamePrice: game.gamePrice,
         gameDiscount: game.gameDiscount,

@@ -1,4 +1,6 @@
 import User from '../../../models/Users'
+import { DeleteImage, Uploader } from '../../../middlewares/UploadImage'
+import { isValidURL } from '../../../helpers/validateUrl'
 
 const UpdateProfile = async (id, data) => {
   const { name, userImage, city, province, birthday, phoneNumber } = data
@@ -12,11 +14,23 @@ const UpdateProfile = async (id, data) => {
         message: 'User not found',
       }
     } else {
+      let img
+
+      if (isValidURL(userImage)) {
+        img = user.userImage
+      } else {
+        const deleteImage = await DeleteImage(user.userImage.public_id)
+        if (deleteImage.result) {
+          img = await Uploader(userImage)
+        } else {
+          img = user.userImage
+        }
+      }
       const updateQuery = await User.updateOne(
         { userId: user.userId },
         {
           name,
-          userImage,
+          userImage: img,
           city,
           province,
           birthday,
