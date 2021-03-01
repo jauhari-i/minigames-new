@@ -15,6 +15,7 @@ import {
   editGame,
   addAdmin,
   updateAdmin,
+  addCart,
 } from '../helpers/validators'
 
 const router = Router()
@@ -57,6 +58,7 @@ const {
     listGameUserHandler,
     listGameWebHandler,
   },
+  CartController: { addToCartHandler, getCartHandler, removeFromCartHandler },
 } = controllers
 
 // =============================
@@ -135,6 +137,10 @@ router.delete(
 // =============================
 // cart
 // =============================
+
+router.post('/cart/add', [verifyToken, addCart], addToCartHandler)
+router.get('/cart/user', verifyToken, getCartHandler)
+router.put('/cart/remove/:itemId', verifyToken, removeFromCartHandler)
 
 // =============================
 // transaction

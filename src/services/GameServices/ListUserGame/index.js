@@ -26,7 +26,7 @@ const ListGameUser = async userId => {
             username: item.username,
             name: item.name,
             email: item.email,
-            image: item.userImage,
+            image: item.userImage.secure_url,
           }))
 
           let data

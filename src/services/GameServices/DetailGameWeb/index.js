@@ -50,7 +50,7 @@ const DetailGameAdmin = async (gameId, userId) => {
           username: item.username,
           name: item.name,
           email: item.email,
-          image: item.userImage,
+          image: item.userImage.secure_url,
         }))
 
         gameData.uniqueCode = code.uniqueCode

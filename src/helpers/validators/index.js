@@ -232,3 +232,24 @@ export const editGame = [
     .isEmpty()
     .withMessage('Url cannot be empty'),
 ]
+
+// const { gameId, playDate, members, time } = data
+
+export const addCart = [
+  check('gameId')
+    .not()
+    .isEmpty()
+    .withMessage('Game id cannot be empty'),
+  check('playDate')
+    .not()
+    .isEmpty()
+    .withMessage('Playing Date cannot be empty'),
+  check('members')
+    .not()
+    .isEmpty()
+    .withMessage('Members cannot be empty'),
+  check('time')
+    .not()
+    .isEmpty()
+    .withMessage('Time Cannot be empty'),
+]
