@@ -23,29 +23,37 @@ const UpdatePassword = async (id, data) => {
           message: 'Old password not match',
         }
       } else {
-        const encryptedPassword = await bcryptjs.hashSync(password, 10)
-        if (!encryptedPassword) {
+        if (oldPassword === password) {
           throw {
             success: false,
-            statusCode: 500,
-            message: 'Internal server error, failed to secure password',
+            statusCode: 400,
+            message: 'New password cannot be same with old password',
           }
         } else {
-          const updateQuery = await Admin.updateOne(
-            { adminId: admin.adminId },
-            { adminPassword: encryptedPassword }
-          )
-          if (!updateQuery) {
+          const encryptedPassword = await bcryptjs.hashSync(password, 10)
+          if (!encryptedPassword) {
             throw {
               success: false,
               statusCode: 500,
-              message: 'Internal server error, failed to update password',
+              message: 'Internal server error, failed to secure password',
             }
           } else {
-            return {
-              success: true,
-              statusCode: 200,
-              message: 'Password updated successful',
+            const updateQuery = await Admin.updateOne(
+              { adminId: admin.adminId },
+              { adminPassword: encryptedPassword }
+            )
+            if (!updateQuery) {
+              throw {
+                success: false,
+                statusCode: 500,
+                message: 'Internal server error, failed to update password',
+              }
+            } else {
+              return {
+                success: true,
+                statusCode: 200,
+                message: 'Password updated successful',
+              }
             }
           }
         }
