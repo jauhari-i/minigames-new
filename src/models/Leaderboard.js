@@ -27,6 +27,10 @@ const leaderboardSchema = new mongoose.Schema({
     default: '',
     required: true,
   },
+  gameId: {
+    type: String,
+    required: true,
+  },
   time: {
     type: Number,
     default: 0,

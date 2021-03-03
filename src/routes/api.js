@@ -19,6 +19,9 @@ import {
   checkoutTr,
   rejectTr,
   uploadPayment,
+  newCode,
+  jGame,
+  sGame,
 } from '../helpers/validators'
 
 const router = Router()
@@ -73,6 +76,14 @@ const {
     uploadPaymentHandler,
   },
   CodeController: { generateCodeHandler, listCodeHandler },
+  DashboardController: { getStatisticHandler },
+  LeaderboardController: {
+    deleteLeaderboardHandler,
+    getLeaderboardAdminHandler,
+    getLeaderboardUserHandler,
+    saveGameHandler,
+    joinGameHandler,
+  },
 } = controllers
 
 // =============================
@@ -201,15 +212,39 @@ router.delete(
 // gameplay
 // =============================
 
+router.post('/gameplay/join', [verifyToken, jGame], joinGameHandler)
+router.post('/gameplay/save', [verifyToken, sGame], saveGameHandler)
+router.get(
+  '/gameplay/leaderboard/game/:gameId/sort/:sort',
+  verifyToken,
+  getLeaderboardUserHandler
+)
+router.get(
+  '/gameplay/leaderboard/list/sort/:sort',
+  verifyTokenAdmin,
+  getLeaderboardAdminHandler
+)
+router.delete(
+  '/gameplay/leaderboard/delete/:leaderboardId',
+  verifyTokenAdmin,
+  deleteLeaderboardHandler
+)
+
 // =============================
 // codes
 // =============================
 
 router.get('/code/list', verifyTokenAdmin, listCodeHandler)
-router.put('/code/generate/:codeId', verifyTokenAdmin, generateCodeHandler)
+router.put(
+  '/code/generate/:codeId',
+  [verifyTokenAdmin, newCode],
+  generateCodeHandler
+)
 
 // =============================
 // dashboard
 // =============================
+
+router.get('/dashboard/admin', verifyTokenAdmin, getStatisticHandler)
 
 export { router }

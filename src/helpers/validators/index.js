@@ -285,3 +285,32 @@ export const newCode = [
     .isEmpty()
     .withMessage('Time cannot be epty'),
 ]
+export const jGame = [
+  check('code')
+    .not()
+    .isEmpty()
+    .withMessage('Code is required'),
+]
+
+export const sGame = [
+  check('codeId')
+    .not()
+    .isEmpty()
+    .withMessage('Code id is required'),
+  check('time')
+    .not()
+    .isEmpty()
+    .withMessage('Time is required'),
+  check('teamName')
+    .not()
+    .isEmpty()
+    .withMessage('Team Name is required'),
+  check('teamIcon')
+    .not()
+    .isEmpty()
+    .withMessage('Team icon is required'),
+  check('uniqueCode')
+    .not()
+    .isEmpty()
+    .withMessage('Code is required'),
+]

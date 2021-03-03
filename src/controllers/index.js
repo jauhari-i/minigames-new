@@ -5,6 +5,8 @@ import { controller as AdminController } from './AdminControllers'
 import { controller as CartController } from './CartControllers'
 import { controller as TransactionController } from './TransactionControllers'
 import { controller as CodeController } from './CodeControllers'
+import { controller as DashboardController } from './DashboardControllers'
+import { controller as LeaderboardController } from './LeaderboardControllers'
 
 const controllers = {
   AuthController,
@@ -14,6 +16,8 @@ const controllers = {
   CartController,
   TransactionController,
   CodeController,
+  DashboardController,
+  LeaderboardController,
 }
 
 export default controllers
