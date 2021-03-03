@@ -26,22 +26,34 @@ const CheckoutTransaction = async (data, userId) => {
 
             const members = itemData.itemMembers
 
-            return {
-              itemId: itemData.itemId,
-              gameId: game.gameId,
-              playingDate: itemData.datePlay,
-              timeStart: itemData.timeStart,
-              timeEnd: itemData.timeEnd,
-              itemPrice: itemData.itemPrice,
-              members: members,
+            if (!game) {
+              return null
+            } else {
+              return {
+                itemId: itemData.itemId,
+                gameId: game.gameId,
+                playingDate: itemData.datePlay,
+                timeStart: itemData.timeStart,
+                timeEnd: itemData.timeEnd,
+                itemPrice: itemData.itemPrice,
+                members: members,
+              }
             }
           })
         )
 
+        const tItem = transactionItems.filter(el => {
+          return el != null
+        })
+
+        const total = tItem
+          .map(item => item.itemPrice)
+          .reduce((p, c) => p + c, 0)
+
         const newTransaction = await Transaction.create({
           transactionId: uuid(),
-          transactionItems: transactionItems,
-          transactionTotal: userCart.total,
+          transactionItems: tItem,
+          transactionTotal: total,
           userId: userId,
         })
 

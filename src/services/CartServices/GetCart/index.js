@@ -53,26 +53,68 @@ const GetCart = async userId => {
               image: item.userImage.secure_url,
             }))
 
-            return {
-              itemId: item.itemId,
-              gameId: game.gameId,
-              playingDate: item.datePlay,
-              timeStart: item.timeStart,
-              timeEnd: item.timeEnd,
-              itemPrice: item.itemPrice,
-              members: memberData,
+            if (!game) {
+              return null
+            } else {
+              return {
+                itemId: item.itemId,
+                gameId: game.gameId,
+                playingDate: item.datePlay,
+                timeStart: item.timeStart,
+                timeEnd: item.timeEnd,
+                itemPrice: item.itemPrice,
+                members: memberData,
+              }
             }
           })
         )
         if (itemsData.length) {
+          const data = itemsData.filter(el => {
+            return el != null
+          })
+
+          const total = data
+            .map(item => item.itemPrice)
+            .reduce((p, c) => p + c, 0)
+
+          const updateTotal = await Cart.updateOne(
+            { cartId: userCart.cartId },
+            { total: total }
+          )
+          if (updateTotal) {
+            return {
+              success: true,
+              statusCode: 200,
+              message: 'Get cart success',
+              data: {
+                cartId: userCart.cartId,
+                items: data,
+                total: total,
+                userId: userCart.userId,
+              },
+            }
+          } else {
+            return {
+              success: true,
+              statusCode: 200,
+              message: 'Get cart success',
+              data: {
+                cartId: userCart.cartId,
+                items: data,
+                total: userCart.total,
+                userId: userCart.userId,
+              },
+            }
+          }
+        } else {
           return {
             success: true,
             statusCode: 200,
             message: 'Get cart success',
             data: {
               cartId: userCart.cartId,
-              items: itemsData,
-              total: userCart.total,
+              items: [],
+              total: 0,
               userId: userCart.userId,
             },
           }
@@ -85,7 +127,7 @@ const GetCart = async userId => {
           data: {
             cartId: userCart.cartId,
             items: [],
-            total: userCart.total,
+            total: 0,
             userId: userCart.userId,
           },
         }

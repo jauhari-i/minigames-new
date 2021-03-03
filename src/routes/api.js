@@ -72,6 +72,7 @@ const {
     rejectTransactionHandler,
     uploadPaymentHandler,
   },
+  CodeController: { generateCodeHandler, listCodeHandler },
 } = controllers
 
 // =============================
@@ -203,6 +204,9 @@ router.delete(
 // =============================
 // codes
 // =============================
+
+router.get('/code/list', verifyTokenAdmin, listCodeHandler)
+router.put('/code/generate/:codeId', verifyTokenAdmin, generateCodeHandler)
 
 // =============================
 // dashboard

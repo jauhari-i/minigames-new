@@ -274,3 +274,14 @@ export const uploadPayment = [
     .isEmpty()
     .withMessage('Image cannot be empty'),
 ]
+
+export const newCode = [
+  check('playDate')
+    .not()
+    .isEmpty()
+    .withMessage('Playing Date cannot be empty'),
+  check('time')
+    .not()
+    .isEmpty()
+    .withMessage('Time cannot be epty'),
+]

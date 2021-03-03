@@ -10,7 +10,7 @@ const ListCode = async () => {
     if (userGame.length === 0) {
       return {
         success: true,
-        message: 'Get game success',
+        message: 'Get code success',
         data: [],
         statusCode: 200,
       }
@@ -159,14 +159,21 @@ const ListCode = async () => {
               updatedAt: item.updatedAt,
             }
           }
-
-          return data
+          if (!game || !user) {
+            return null
+          } else {
+            return data
+          }
         })
       )
+
+      const data = gameUser.filter(el => {
+        return el != null
+      })
       return {
         success: true,
-        message: 'Get game success',
-        data: gameUser,
+        message: 'Get code success',
+        data: data,
         statusCode: 200,
       }
     }

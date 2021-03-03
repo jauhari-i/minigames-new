@@ -45,33 +45,61 @@ const DetailTransaction = async transactionId => {
             email: item.email,
             image: item.userImage.secure_url,
           }))
-
-          return {
-            gameId: game.gameId,
-            gameData: {
+          if (!game) {
+            return {
+              gameId: tItem.gameId,
+              gameData: {
+                gameId: tItem.gameId,
+                gameTitle: 'Game is unavaliable',
+                posterImage: 'Game is unavaliable',
+                gameImage: 'Game is unavaliable',
+                gameDescription: 'Game is unavaliable',
+                gamePrice: 0,
+                gameDiscount: 0,
+                gamePriceAfterDiscount: 0,
+                gameDifficulty: 0,
+                gameRating: 0,
+                gameGenre: [''],
+                gameDuration: 0,
+                gameUrl: 'Game is unavaliable',
+                gameCapacity: 0,
+                gameReady: false,
+                createdAt: Date.now(),
+              },
+              playingDate: tItem.datePlay,
+              timeStart: tItem.timeStart,
+              timeEnd: tItem.timeEnd,
+              itemPrice: tItem.itemPrice,
+              members: member,
+            }
+          } else {
+            return {
               gameId: game.gameId,
-              gameTitle: game.gameTitle,
-              posterImage: game.posterImage.secure_url,
-              gameImage: game.gameImage.secure_url,
-              gameDescription: game.gameDescription,
-              gamePrice: game.gamePrice,
-              gameDiscount: game.gameDiscount,
-              gamePriceAfterDiscount: game.gamePriceAfterDiscount,
-              gameDifficulty: game.gameDifficulty,
-              gameRating: game.gameRating,
-              gameGenre: game.gameGenre,
-              gameDuration: game.gameDuration,
-              gameUrl: game.gameUrl,
-              gameCapacity: game.gameCapacity,
-              gameReady: game.gameReady,
-              createdAt: game.createdAt,
-              createdBy: game.createdBy,
-            },
-            playingDate: tItem.datePlay,
-            timeStart: tItem.timeStart,
-            timeEnd: tItem.timeEnd,
-            itemPrice: tItem.itemPrice,
-            members: member,
+              gameData: {
+                gameId: game.gameId,
+                gameTitle: game.gameTitle,
+                posterImage: game.posterImage.secure_url,
+                gameImage: game.gameImage.secure_url,
+                gameDescription: game.gameDescription,
+                gamePrice: game.gamePrice,
+                gameDiscount: game.gameDiscount,
+                gamePriceAfterDiscount: game.gamePriceAfterDiscount,
+                gameDifficulty: game.gameDifficulty,
+                gameRating: game.gameRating,
+                gameGenre: game.gameGenre,
+                gameDuration: game.gameDuration,
+                gameUrl: game.gameUrl,
+                gameCapacity: game.gameCapacity,
+                gameReady: game.gameReady,
+                createdAt: game.createdAt,
+                createdBy: game.createdBy,
+              },
+              playingDate: tItem.datePlay,
+              timeStart: tItem.timeStart,
+              timeEnd: tItem.timeEnd,
+              itemPrice: tItem.itemPrice,
+              members: member,
+            }
           }
         })
       )
@@ -140,7 +168,6 @@ const DetailTransaction = async transactionId => {
       }
     }
   } catch (error) {
-    console.log(error)
     return error
   }
 }

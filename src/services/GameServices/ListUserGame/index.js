@@ -32,36 +32,66 @@ const ListGameUser = async userId => {
             image: item.userImage.secure_url,
           }))
 
-          if (isExpired) {
-            const updateMygame = await MyGame.updateOne(
-              { myGameId: item.myGameId },
-              { isExpired: true }
-            )
-            if (updateMygame) {
-              return {
-                gameId: game.gameId,
-                gameTitle: game.gameTitle,
-                posterImage: game.posterImage.secure_url,
-                gameImage: game.gameImage.secure_url,
-                gameDescription: game.gameDescription,
-                gamePrice: game.gamePrice,
-                gameDiscount: game.gameDiscount,
-                gamePriceAfterDiscount: game.gamePriceAfterDiscount,
-                gameDifficulty: game.gameDifficulty,
-                gameRating: game.gameRating,
-                gameGenre: game.gameGenre,
-                gameDuration: game.gameDuration,
-                gameUrl: game.gameUrl,
-                gameCapacity: game.gameCapacity,
-                gameReady: game.gameReady,
-                canPlay: !isExpired ? true : false,
-                uniqueCode: code.uniqueCode,
-                members: member,
-                playingSchedule: code.playingDate,
-                timeStart: code.timeStart,
-                timeEnd: code.timeEnd,
-                createdAt: game.createdAt,
-                createdBy: game.createdBy,
+          if (!game) {
+            return null
+          } else {
+            if (isExpired) {
+              const updateMygame = await MyGame.updateOne(
+                { myGameId: item.myGameId },
+                { isExpired: true }
+              )
+              if (updateMygame) {
+                return {
+                  gameId: game.gameId,
+                  gameTitle: game.gameTitle,
+                  posterImage: game.posterImage.secure_url,
+                  gameImage: game.gameImage.secure_url,
+                  gameDescription: game.gameDescription,
+                  gamePrice: game.gamePrice,
+                  gameDiscount: game.gameDiscount,
+                  gamePriceAfterDiscount: game.gamePriceAfterDiscount,
+                  gameDifficulty: game.gameDifficulty,
+                  gameRating: game.gameRating,
+                  gameGenre: game.gameGenre,
+                  gameDuration: game.gameDuration,
+                  gameUrl: game.gameUrl,
+                  gameCapacity: game.gameCapacity,
+                  gameReady: game.gameReady,
+                  canPlay: !isExpired ? true : false,
+                  uniqueCode: code.uniqueCode,
+                  members: member,
+                  playingSchedule: code.playingDate,
+                  timeStart: code.timeStart,
+                  timeEnd: code.timeEnd,
+                  createdAt: game.createdAt,
+                  createdBy: game.createdBy,
+                }
+              } else {
+                return {
+                  gameId: game.gameId,
+                  gameTitle: game.gameTitle,
+                  posterImage: game.posterImage.secure_url,
+                  gameImage: game.gameImage.secure_url,
+                  gameDescription: game.gameDescription,
+                  gamePrice: game.gamePrice,
+                  gameDiscount: game.gameDiscount,
+                  gamePriceAfterDiscount: game.gamePriceAfterDiscount,
+                  gameDifficulty: game.gameDifficulty,
+                  gameRating: game.gameRating,
+                  gameGenre: game.gameGenre,
+                  gameDuration: game.gameDuration,
+                  gameUrl: game.gameUrl,
+                  gameCapacity: game.gameCapacity,
+                  gameReady: game.gameReady,
+                  canPlay: !isExpired ? true : false,
+                  uniqueCode: code.uniqueCode,
+                  members: member,
+                  playingSchedule: code.playingDate,
+                  timeStart: code.timeStart,
+                  timeEnd: code.timeEnd,
+                  createdAt: game.createdAt,
+                  createdBy: game.createdBy,
+                }
               }
             } else {
               return {
@@ -80,7 +110,7 @@ const ListGameUser = async userId => {
                 gameUrl: game.gameUrl,
                 gameCapacity: game.gameCapacity,
                 gameReady: game.gameReady,
-                canPlay: !isExpired ? true : false,
+                canPlay: !item.isExpired && !item.isPlayed ? true : false,
                 uniqueCode: code.uniqueCode,
                 members: member,
                 playingSchedule: code.playingDate,
@@ -90,39 +120,17 @@ const ListGameUser = async userId => {
                 createdBy: game.createdBy,
               }
             }
-          } else {
-            return {
-              gameId: game.gameId,
-              gameTitle: game.gameTitle,
-              posterImage: game.posterImage.secure_url,
-              gameImage: game.gameImage.secure_url,
-              gameDescription: game.gameDescription,
-              gamePrice: game.gamePrice,
-              gameDiscount: game.gameDiscount,
-              gamePriceAfterDiscount: game.gamePriceAfterDiscount,
-              gameDifficulty: game.gameDifficulty,
-              gameRating: game.gameRating,
-              gameGenre: game.gameGenre,
-              gameDuration: game.gameDuration,
-              gameUrl: game.gameUrl,
-              gameCapacity: game.gameCapacity,
-              gameReady: game.gameReady,
-              canPlay: !item.isExpired && !item.isPlayed ? true : false,
-              uniqueCode: code.uniqueCode,
-              members: member,
-              playingSchedule: code.playingDate,
-              timeStart: code.timeStart,
-              timeEnd: code.timeEnd,
-              createdAt: game.createdAt,
-              createdBy: game.createdBy,
-            }
           }
         })
       )
+
+      const data = gameUser.filter(el => {
+        return el != null
+      })
       return {
         success: true,
         message: 'Get game success',
-        data: gameUser,
+        data: data,
         statusCode: 200,
       }
     }
