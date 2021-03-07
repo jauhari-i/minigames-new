@@ -68,6 +68,7 @@ const GetCart = async userId => {
             }
           })
         )
+        console.log(itemsData)
         if (itemsData.length) {
           const data = itemsData.filter(el => {
             return el != null
