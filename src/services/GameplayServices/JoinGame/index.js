@@ -46,13 +46,13 @@ const JoinGame = async (uCode, userId) => {
           const today = new Date()
 
           const date = today.getDate()
-          const h = today.getHours()
+          const h = today.getHours() * 60
 
           const playDt = new Date(code.playingDate)
 
           const pDate = playDt.getDate()
-          const pStart = code.timeStart
-          const pEnd = code.timeEnd
+          const pStart = code.timeStart * 60
+          const pEnd = code.timeEnd * 60
 
           if (date !== pDate) {
             throw {
@@ -63,13 +63,14 @@ const JoinGame = async (uCode, userId) => {
               )}`,
             }
           } else {
-            if (h < pStart || h > pEnd) {
+            const canPlay = pStart <= h && h <= pEnd
+            if (!canPlay) {
               throw {
                 success: false,
                 statusCode: 400,
                 message: `Code only can be played at ${
-                  pStart === 9 ? '09' : pStart
-                }.00 - ${pEnd}.00`,
+                  pStart / 60 === 9 ? '09' : pStart / 60
+                }.00 - ${pEnd / 60}.00`,
               }
             } else {
               const game = await Game.findOne({ gameId: code.gameId })
