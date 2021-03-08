@@ -23,9 +23,9 @@ export const sendVerificationEmail = async (email, token) => {
     const data = {
       token: token,
       email: email,
-      link: 'https://user.tranceformasiindonesia.com/verify?token=' + token,
+      link: 'https://user.tranceformasiindonesia.com/#/verify?token=' + token,
       linkRequest:
-        'https://user.tranceformasiindonesia.com/verify?token=' +
+        'https://user.tranceformasiindonesia.com/#/verify?token=' +
         token +
         '&request=true',
     }
