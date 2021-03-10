@@ -139,11 +139,15 @@ const ListTransactionUser = async userId => {
           }
         })
       )
-      if (trData) {
-        const sortNewest = trData.sort((a, b) => {
+
+      const trUsers = trData.filter(el => {
+        return el != null
+      })
+
+      if (trUsers.length) {
+        const sortNewest = trUsers.sort((a, b) => {
           return new Date(b.createdAt) - new Date(a.createdAt)
         })
-
         return {
           success: true,
           statusCode: 200,
@@ -151,10 +155,11 @@ const ListTransactionUser = async userId => {
           data: sortNewest,
         }
       } else {
-        throw {
-          success: false,
-          statusCode: 500,
-          message: 'Internal server error',
+        return {
+          success: true,
+          message: 'Get transaction success',
+          data: [],
+          statusCode: 200,
         }
       }
     } else {
