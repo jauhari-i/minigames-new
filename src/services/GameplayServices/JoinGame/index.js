@@ -64,15 +64,7 @@ const JoinGame = async (uCode, userId) => {
             }
           } else {
             const canPlay = pStart <= h && h <= pEnd
-            if (!canPlay) {
-              throw {
-                success: false,
-                statusCode: 400,
-                message: `Code only can be played at ${
-                  pStart / 60 === 9 ? '09' : pStart / 60
-                }.00 - ${pEnd / 60}.00`,
-              }
-            } else {
+            if (canPlay) {
               const game = await Game.findOne({ gameId: code.gameId })
               if (!game || !game.gameReady) {
                 throw {
@@ -82,6 +74,14 @@ const JoinGame = async (uCode, userId) => {
                 }
               } else {
                 const mem = await Users.find({ userId: { $in: members } })
+
+                const member = mem.map(item => ({
+                  userId: item.userId,
+                  username: item.username,
+                  name: item.name,
+                  email: item.email,
+                  image: item.userImage.secure_url,
+                }))
 
                 const updateQuery = await MyGames.updateOne(
                   {
@@ -109,12 +109,20 @@ const JoinGame = async (uCode, userId) => {
                       codeId: code.codeId,
                       gameId: game.gameId,
                       userId: user.userId,
-                      members: mem,
+                      members: member,
                       playDate: code.playingDate,
                       uniqueCode: code.uniqueCode,
                     },
                   }
                 }
+              }
+            } else {
+              throw {
+                success: false,
+                statusCode: 400,
+                message: `Code only can be played at ${
+                  pStart / 60 === 9 ? '09' : pStart / 60
+                }.00 - ${pEnd / 60}.00`,
               }
             }
           }
