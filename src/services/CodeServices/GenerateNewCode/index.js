@@ -16,13 +16,23 @@ const GenerateNewCode = async (codeId, data) => {
         message: 'Code not found',
       }
     } else {
-      const isExpired = Date.now() > playDate
+      const today = new Date()
+      const playingDate = new Date(playDate)
+
+      const isExpired = (firstDate, secondDate) => {
+        if (firstDate.setHours(0, 0, 0, 0) <= secondDate.setHours(0, 0, 0, 0)) {
+          return true
+        }
+
+        return false
+      }
+
       const game = await Game.findOne({ gameId: code.gameId })
       const newCode = generate(8)
       const updateQuery = await Codes.updateOne(
         { codeId },
         {
-          playingDate: playDate,
+          playingDate: playingDate,
           timeStart: getTimeStart(time),
           timeEnd: getTimeEnd(time, game.gameDuration),
           uniqueCode: newCode,
@@ -33,7 +43,7 @@ const GenerateNewCode = async (codeId, data) => {
         const updateMyGame = await MyGames.updateOne(
           { codeId: code.codeId },
           {
-            isExpired: isExpired,
+            isExpired: isExpired(playingDate, today),
             isPlayed: false,
             lastPlayer: '',
             lastPlayedDate: null,

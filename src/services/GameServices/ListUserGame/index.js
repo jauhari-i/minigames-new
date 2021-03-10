@@ -19,7 +19,20 @@ const ListGameUser = async userId => {
         userGame.map(async item => {
           const code = await Codes.findOne({ codeId: item.codeId })
 
-          const isExpired = Date.now() > code.playingDate
+          const today = new Date()
+          const playDate = new Date(code.playingDate)
+
+          const isExpired = (firstDate, secondDate) => {
+            if (
+              firstDate.setHours(0, 0, 0, 0) <= secondDate.setHours(0, 0, 0, 0)
+            ) {
+              return true
+            }
+
+            return false
+          }
+
+          const expired = isExpired(playDate, today)
 
           const game = await Game.findOne({ gameId: item.gameId })
           const members = await User.find({ userId: { $in: code.codeMembers } })
@@ -35,7 +48,7 @@ const ListGameUser = async userId => {
           if (!game) {
             return null
           } else {
-            if (isExpired) {
+            if (expired) {
               const updateMygame = await MyGame.updateOne(
                 { myGameId: item.myGameId },
                 { isExpired: true }
@@ -57,7 +70,7 @@ const ListGameUser = async userId => {
                   gameUrl: game.gameUrl,
                   gameCapacity: game.gameCapacity,
                   gameReady: game.gameReady,
-                  canPlay: !isExpired ? true : false,
+                  canPlay: expired,
                   uniqueCode: code.uniqueCode,
                   members: member,
                   playingSchedule: code.playingDate,
@@ -83,7 +96,7 @@ const ListGameUser = async userId => {
                   gameUrl: game.gameUrl,
                   gameCapacity: game.gameCapacity,
                   gameReady: game.gameReady,
-                  canPlay: !isExpired ? true : false,
+                  canPlay: expired,
                   uniqueCode: code.uniqueCode,
                   members: member,
                   playingSchedule: code.playingDate,
