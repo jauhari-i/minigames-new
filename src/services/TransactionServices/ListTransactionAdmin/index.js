@@ -85,59 +85,64 @@ const ListTransactionAdmin = async () => {
             return el != null
           })
 
-          const decoded = await jwt.decode(
-            trItem.paymentToken,
-            'minigames-payment-token'
-          )
-          const isExpired = Date.now() > decoded.exp * 1000
-          if (isExpired && trItem.transactionStatus === status.notUploaded) {
-            const expTr = await Transaction.findOneAndUpdate(
-              { transactionId: trItem.transactionId },
-              {
-                transactionStatus: status.expired,
-                isExpired: true,
-              }
+          if (!itemsDetail.length) {
+            return null
+          } else {
+            const decoded = await jwt.decode(
+              trItem.paymentToken,
+              'minigames-payment-token'
             )
 
-            return {
-              transactionId: expTr.transactionId,
-              transactionItems: itemsDetail,
-              transactionStatus: status.expired,
-              transactionTotal: expTr.transactionTotal,
-              transactionImage: expTr.transactionImage.secure_url,
-              isRejected: expTr.isRejected,
-              rejectedReason: expTr.isRejected && expTr.rejectedReason,
-              isExpired: true,
-              createdAt: expTr.createdAt,
-              userData: {
-                userId: user.userId,
-                username: user.username,
-                name: user.name,
-                email: user.email,
-                image: user.userImage.secure_url,
-              },
-              adminData: admin,
-            }
-          } else {
-            return {
-              transactionId: trItem.transactionId,
-              transactionItems: itemsDetail,
-              transactionStatus: trItem.transactionStatus,
-              transactionTotal: trItem.transactionTotal,
-              transactionImage: trItem.transactionImage.secure_url,
-              isRejected: trItem.isRejected,
-              rejectedReason: trItem.isRejected && trItem.rejectedReason,
-              isExpired: trItem.isExpired,
-              createdAt: trItem.createdAt,
-              userData: {
-                userId: user.userId,
-                username: user.username,
-                name: user.name,
-                email: user.email,
-                image: user.userImage.secure_url,
-              },
+            const isExpired = Date.now() > decoded.exp * 1000
+            if (isExpired && trItem.transactionStatus === status.notUploaded) {
+              const expTr = await Transaction.findOneAndUpdate(
+                { transactionId: trItem.transactionId },
+                {
+                  transactionStatus: status.expired,
+                  isExpired: true,
+                }
+              )
 
-              adminData: admin,
+              return {
+                transactionId: expTr.transactionId,
+                transactionItems: itemsDetail,
+                transactionStatus: status.expired,
+                transactionTotal: expTr.transactionTotal,
+                transactionImage: expTr.transactionImage.secure_url,
+                isRejected: expTr.isRejected,
+                rejectedReason: expTr.isRejected && expTr.rejectedReason,
+                isExpired: true,
+                createdAt: expTr.createdAt,
+                userData: {
+                  userId: user.userId,
+                  username: user.username,
+                  name: user.name,
+                  email: user.email,
+                  image: user.userImage.secure_url,
+                },
+                adminData: admin,
+              }
+            } else {
+              return {
+                transactionId: trItem.transactionId,
+                transactionItems: itemsDetail,
+                transactionStatus: trItem.transactionStatus,
+                transactionTotal: trItem.transactionTotal,
+                transactionImage: trItem.transactionImage.secure_url,
+                isRejected: trItem.isRejected,
+                rejectedReason: trItem.isRejected && trItem.rejectedReason,
+                isExpired: trItem.isExpired,
+                createdAt: trItem.createdAt,
+                userData: {
+                  userId: user.userId,
+                  username: user.username,
+                  name: user.name,
+                  email: user.email,
+                  image: user.userImage.secure_url,
+                },
+
+                adminData: admin,
+              }
             }
           }
         })
