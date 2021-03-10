@@ -65,7 +65,7 @@ const JoinGame = async (uCode, userId) => {
               throw {
                 success: false,
                 statusCode: 400,
-                message: `Code only can be played at ${moment(pDate).format(
+                message: `Code only can be played at ${moment(playDt).format(
                   'll'
                 )}`,
               }

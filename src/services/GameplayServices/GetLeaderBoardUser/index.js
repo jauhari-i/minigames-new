@@ -59,8 +59,8 @@ const GetLeaderboardUser = async (gameId, sort) => {
 
       if (sort === 'score') {
         sorted = data.sort((a, b) => {
-          if (a.score < b.score) return -1
-          if (a.score > b.score) return 1
+          if (a.score > b.score) return -1
+          if (a.score < b.score) return 1
           return 0
         })
       } else {
