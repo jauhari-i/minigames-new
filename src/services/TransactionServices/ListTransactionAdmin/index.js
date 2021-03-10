@@ -131,11 +131,11 @@ const ListTransactionAdmin = async () => {
               isExpired: true,
               createdAt: expTr.createdAt,
               userData: {
-                userId: user.userId,
-                username: user.username,
-                name: user.name,
-                email: user.email,
-                image: user.userImage.secure_url,
+                userId: !user ? 'User not available' : user.userId,
+                username: !user ? 'User not available' : user.username,
+                name: !user ? 'User not available' : user.name,
+                email: !user ? 'User not available' : user.email,
+                image: !user ? 'User not available' : user.userImage.secure_url,
               },
               adminData: admin,
             }
@@ -151,11 +151,11 @@ const ListTransactionAdmin = async () => {
               isExpired: trItem.isExpired,
               createdAt: trItem.createdAt,
               userData: {
-                userId: user.userId,
-                username: user.username,
-                name: user.name,
-                email: user.email,
-                image: user.userImage.secure_url,
+                userId: !user ? 'User not available' : user.userId,
+                username: !user ? 'User not available' : user.username,
+                name: !user ? 'User not available' : user.name,
+                email: !user ? 'User not available' : user.email,
+                image: !user ? 'User not available' : user.userImage.secure_url,
               },
 
               adminData: admin,
