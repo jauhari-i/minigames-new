@@ -2,6 +2,7 @@ import Game from '../../../models/Game'
 import MyGame from '../../../models/MyGames'
 import Codes from '../../../models/Codes'
 import User from '../../../models/Users'
+import { checkExpired } from '../../../middlewares/CheckExpired'
 
 const ListGameUser = async userId => {
   try {
@@ -19,20 +20,9 @@ const ListGameUser = async userId => {
         userGame.map(async item => {
           const code = await Codes.findOne({ codeId: item.codeId })
 
-          const today = new Date()
-          const playDate = new Date(code.playingDate)
+          const playDate = code.playingDate
 
-          const isExpired = (firstDate, secondDate) => {
-            if (
-              firstDate.setHours(0, 0, 0, 0) <= secondDate.setHours(0, 0, 0, 0)
-            ) {
-              return true
-            }
-
-            return false
-          }
-
-          const expired = isExpired(playDate, today)
+          const expired = checkExpired(playDate, code.timeEnd)
 
           const game = await Game.findOne({ gameId: item.gameId })
           const members = await User.find({ userId: { $in: code.codeMembers } })

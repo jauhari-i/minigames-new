@@ -2,6 +2,7 @@ import Game from '../../../models/Game'
 import MyGame from '../../../models/MyGames'
 import Codes from '../../../models/Codes'
 import User from '../../../models/Users'
+import { checkExpired } from '../../../middlewares/CheckExpired'
 
 const ListCode = async () => {
   try {
@@ -29,26 +30,15 @@ const ListCode = async () => {
             image: item.userImage.secure_url,
           }))
 
-          const today = new Date()
-          const playDate = new Date(code.playingDate)
-
-          const isExpired = (firstDate, secondDate) => {
-            if (
-              firstDate.setHours(0, 0, 0, 0) <= secondDate.setHours(0, 0, 0, 0)
-            ) {
-              return true
-            }
-
-            return false
-          }
+          const isExpired = checkExpired(code.playingDate, code.timeEnd)
 
           if (!game || !user) {
             return null
           } else {
-            if (isExpired(playDate, today)) {
+            if (isExpired) {
               const updateMyGames = await MyGame.updateOne(
                 { myGameId: item.myGameId },
-                { isExpired: true }
+                { isExpired: isExpired }
               )
               if (updateMyGames) {
                 return {
@@ -79,7 +69,7 @@ const ListCode = async () => {
                     email: user.email,
                     image: user.userImage.secure_url,
                   },
-                  isExpired: true,
+                  isExpired: isExpired,
                   isPlayed: item.isPlayed,
                   codeId: code.codeId,
                   uniqueCode: code.uniqueCode,
@@ -119,7 +109,7 @@ const ListCode = async () => {
                     email: user.email,
                     image: user.userImage.secure_url,
                   },
-                  isExpired: true,
+                  isExpired: isExpired,
                   isPlayed: item.isPlayed,
                   codeId: code.codeId,
                   uniqueCode: code.uniqueCode,
@@ -134,7 +124,7 @@ const ListCode = async () => {
             } else {
               const updateMyGames = await MyGame.updateOne(
                 { myGameId: item.myGameId },
-                { isExpired: false }
+                { isExpired: isExpired }
               )
               if (updateMyGames) {
                 return {
@@ -165,7 +155,7 @@ const ListCode = async () => {
                     email: user.email,
                     image: user.userImage.secure_url,
                   },
-                  isExpired: item.isExpired,
+                  isExpired: isExpired,
                   isPlayed: item.isPlayed,
                   codeId: code.codeId,
                   uniqueCode: code.uniqueCode,
@@ -205,7 +195,7 @@ const ListCode = async () => {
                     email: user.email,
                     image: user.userImage.secure_url,
                   },
-                  isExpired: item.isExpired,
+                  isExpired: isExpired,
                   isPlayed: item.isPlayed,
                   codeId: code.codeId,
                   uniqueCode: code.uniqueCode,
