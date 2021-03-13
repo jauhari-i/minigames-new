@@ -18,6 +18,8 @@ const GetLeaderboardUser = async sort => {
 
             const user = await Users.findOne({ userId: userGame.userId })
 
+            if (!user || !userGame) return null
+
             return {
               leaderboardId: item.leaderboardId,
               leaderName: item.teamLeaderName,
