@@ -1,6 +1,7 @@
 import services from '../../services'
 import { handleError } from '../../helpers/error'
 import { validationResult } from 'express-validator'
+import { calculateLimitAndOffset, paginate } from 'paginate-info'
 
 const {
   LeaderboardServices: {
@@ -32,6 +33,7 @@ const controller = {
   getLeaderboardAdminHandler: async (req, res) => {
     const {
       params: { sort = 'score' },
+      query: { page = 1, size = 10 },
     } = req
 
     const query = await GetLeaderboardAdmin(sort)
@@ -39,7 +41,19 @@ const controller = {
       if (!query.success) {
         handleError(query, res)
       } else {
-        res.status(query.statusCode).json(query)
+        const { statusCode, data, message, success } = query
+        const { limit, offset } = calculateLimitAndOffset(page, size)
+        const count = data.length
+        const paginatedData = data.slice(offset, offset + limit)
+        const paginationInfo = paginate(page, count, paginatedData)
+        const response = {
+          statusCode,
+          success,
+          message,
+          data: paginatedData,
+          meta: paginationInfo,
+        }
+        res.status(statusCode).json(response)
       }
     } else {
       handleError({ statusCode: 500, message: 'Internal server error' }, res)
