@@ -30,106 +30,125 @@ const JoinGame = async (uCode, userId) => {
           message: 'Code not found',
         }
       } else {
-        const members = code.codeMembers
-
-        const uIndex = members.findIndex(x => x === userId)
-
-        if (uIndex < 0) {
+        const mG = await MyGames.findOne({ codeId: code.codeId })
+        if (!mG) {
           throw {
             success: false,
-            statusCode: 400,
-            message: 'Code is only for members',
+            statusCode: 404,
+            messge: 'Code not found',
           }
         } else {
-          const user = await Users.findOne({ userId: members[uIndex] })
-
-          if (!user) {
+          if (mG.isPlayed || mG.isExpired) {
             throw {
               success: false,
-              statusCode: 500,
-              message: 'Internal server error',
+              statusCode: 400,
+              message: mG.isExpired
+                ? 'Code is expired'
+                : 'Code already played at ' + mG.lastPlayedDate,
             }
           } else {
-            const today = new Date()
+            const members = code.codeMembers
 
-            const date = today.getDate()
-            const h = today.getHours() * 60
+            const uIndex = members.findIndex(x => x === userId)
 
-            const playDt = new Date(code.playingDate)
-
-            const pDate = playDt.getDate()
-            const pStart = code.timeStart * 60
-            const pEnd = code.timeEnd * 60
-
-            if (date !== pDate) {
+            if (uIndex < 0) {
               throw {
                 success: false,
                 statusCode: 400,
-                message: `Code only can be played at ${moment(playDt).format(
-                  'll'
-                )}`,
+                message: 'Code is only for members',
               }
             } else {
-              const canPlay = pStart <= h && h <= pEnd
-              if (canPlay) {
-                const game = await Game.findOne({ gameId: code.gameId })
-                if (!game || !game.gameReady) {
+              const user = await Users.findOne({ userId: members[uIndex] })
+
+              if (!user) {
+                throw {
+                  success: false,
+                  statusCode: 500,
+                  message: 'Internal server error',
+                }
+              } else {
+                const today = new Date()
+
+                const date = today.getDate()
+                const h = today.getHours() * 60
+
+                const playDt = new Date(code.playingDate)
+
+                const pDate = playDt.getDate()
+                const pStart = code.timeStart * 60
+                const pEnd = code.timeEnd * 60
+
+                if (date !== pDate) {
                   throw {
                     success: false,
                     statusCode: 400,
-                    message: 'Game is unavailable',
+                    message: `Code only can be played at ${moment(
+                      playDt
+                    ).format('ll')}`,
                   }
                 } else {
-                  const mem = await Users.find({ userId: { $in: members } })
+                  const canPlay = pStart <= h && h <= pEnd
+                  if (canPlay) {
+                    const game = await Game.findOne({ gameId: code.gameId })
+                    if (!game || !game.gameReady) {
+                      throw {
+                        success: false,
+                        statusCode: 400,
+                        message: 'Game is unavailable',
+                      }
+                    } else {
+                      const mem = await Users.find({ userId: { $in: members } })
 
-                  const member = mem.map(item => ({
-                    userId: item.userId,
-                    username: item.username,
-                    name: item.name,
-                    email: item.email,
-                    image: item.userImage.secure_url,
-                  }))
+                      const member = mem.map(item => ({
+                        userId: item.userId,
+                        username: item.username,
+                        name: item.name,
+                        email: item.email,
+                        image: item.userImage.secure_url,
+                      }))
 
-                  const updateQuery = await MyGames.updateOne(
-                    {
-                      codeId: code.codeId,
-                    },
-                    {
-                      isPlayed: true,
-                      lastPlayedDate: Date.now(),
-                      lastPlayer: user.userId,
-                    }
-                  )
+                      const updateQuery = await MyGames.updateOne(
+                        {
+                          codeId: code.codeId,
+                        },
+                        {
+                          isPlayed: true,
+                          lastPlayedDate: Date.now(),
+                          lastPlayer: user.userId,
+                        }
+                      )
 
-                  if (!updateQuery) {
-                    throw {
-                      success: false,
-                      statusCode: 500,
-                      message: 'Internal server error',
+                      if (!updateQuery) {
+                        throw {
+                          success: false,
+                          statusCode: 500,
+                          message: 'Internal server error',
+                        }
+                      } else {
+                        return {
+                          success: true,
+                          statusCode: 200,
+                          message: 'Join game success',
+                          data: {
+                            codeId: code.codeId,
+                            gameId: game.gameId,
+                            userId: user.userId,
+                            members: member,
+                            playDate: code.playingDate,
+                            uniqueCode: code.uniqueCode,
+                          },
+                        }
+                      }
                     }
                   } else {
-                    return {
-                      success: true,
-                      statusCode: 200,
-                      message: 'Join game success',
-                      data: {
-                        codeId: code.codeId,
-                        gameId: game.gameId,
-                        userId: user.userId,
-                        members: member,
-                        playDate: code.playingDate,
-                        uniqueCode: code.uniqueCode,
-                      },
+                    throw {
+                      success: false,
+                      statusCode: 400,
+                      message: `Code only can be played at ${
+                        pStart / 60 === 9 ? '09' : pStart / 60
+                      }.00 - ${pEnd / 60}.00`,
                     }
                   }
-                }
-              } else {
-                throw {
-                  success: false,
-                  statusCode: 400,
-                  message: `Code only can be played at ${
-                    pStart / 60 === 9 ? '09' : pStart / 60
-                  }.00 - ${pEnd / 60}.00`,
                 }
               }
             }
