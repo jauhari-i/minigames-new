@@ -69,6 +69,12 @@ const ListCode = async () => {
                     email: user.email,
                     image: user.userImage.secure_url,
                   },
+                  expiredDate: new Date(code.playingDate).setHours(
+                    code.timeEnd,
+                    0,
+                    0,
+                    0
+                  ),
                   isExpired: isExpired,
                   isPlayed: item.isPlayed,
                   codeId: code.codeId,
@@ -109,6 +115,12 @@ const ListCode = async () => {
                     email: user.email,
                     image: user.userImage.secure_url,
                   },
+                  expiredDate: new Date(code.playingDate).setHours(
+                    code.timeEnd,
+                    0,
+                    0,
+                    0
+                  ),
                   isExpired: isExpired,
                   isPlayed: item.isPlayed,
                   codeId: code.codeId,
@@ -155,6 +167,12 @@ const ListCode = async () => {
                     email: user.email,
                     image: user.userImage.secure_url,
                   },
+                  expiredDate: new Date(code.playingDate).setHours(
+                    code.timeEnd,
+                    0,
+                    0,
+                    0
+                  ),
                   isExpired: isExpired,
                   isPlayed: item.isPlayed,
                   codeId: code.codeId,
@@ -195,6 +213,12 @@ const ListCode = async () => {
                     email: user.email,
                     image: user.userImage.secure_url,
                   },
+                  expiredDate: new Date(code.playingDate).setHours(
+                    code.timeEnd,
+                    0,
+                    0,
+                    0
+                  ),
                   isExpired: isExpired,
                   isPlayed: item.isPlayed,
                   codeId: code.codeId,
