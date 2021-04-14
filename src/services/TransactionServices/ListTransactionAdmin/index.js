@@ -15,6 +15,10 @@ const ListTransactionAdmin = async () => {
           const user = await User.findOne({ userId: trItem.userId })
           let admin
 
+          if (!user) {
+            return null
+          }
+
           if (trItem.adminId) {
             const adminData = await Admin.findOne({ adminId: trItem.adminId })
             admin = {
@@ -44,32 +48,7 @@ const ListTransactionAdmin = async () => {
               }))
 
               if (!game) {
-                return {
-                  gameId: tItem.gameId,
-                  gameData: {
-                    gameId: tItem.gameId,
-                    gameTitle: 'Game is unavaliable',
-                    posterImage: 'Game is unavaliable',
-                    gameImage: 'Game is unavaliable',
-                    gameDescription: 'Game is unavaliable',
-                    gamePrice: 0,
-                    gameDiscount: 0,
-                    gamePriceAfterDiscount: 0,
-                    gameDifficulty: 0,
-                    gameRating: 0,
-                    gameGenre: [''],
-                    gameDuration: 0,
-                    gameUrl: 'Game is unavaliable',
-                    gameCapacity: 0,
-                    gameReady: false,
-                    createdAt: Date.now(),
-                  },
-                  playingDate: tItem.datePlay,
-                  timeStart: tItem.timeStart,
-                  timeEnd: tItem.timeEnd,
-                  itemPrice: tItem.itemPrice,
-                  members: member,
-                }
+                return null
               } else {
                 return {
                   gameId: game.gameId,
@@ -106,65 +85,74 @@ const ListTransactionAdmin = async () => {
             return el != null
           })
 
-          const decoded = await jwt.decode(
-            trItem.paymentToken,
-            'minigames-payment-token'
-          )
-          const isExpired = Date.now() > decoded.exp * 1000
-          if (isExpired && trItem.transactionStatus === status.notUploaded) {
-            const expTr = await Transaction.findOneAndUpdate(
-              { transactionId: trItem.transactionId },
-              {
-                transactionStatus: status.expired,
-                isExpired: true,
-              }
+          if (!itemsDetail.length) {
+            return null
+          } else {
+            const decoded = await jwt.decode(
+              trItem.paymentToken,
+              'minigames-payment-token'
             )
 
-            return {
-              transactionId: expTr.transactionId,
-              transactionItems: itemsDetail,
-              transactionStatus: status.expired,
-              transactionTotal: expTr.transactionTotal,
-              transactionImage: expTr.transactionImage.secure_url,
-              isRejected: expTr.isRejected,
-              rejectedReason: expTr.isRejected && expTr.rejectedReason,
-              isExpired: true,
-              createdAt: expTr.createdAt,
-              userData: {
-                userId: !user ? 'User not available' : user.userId,
-                username: !user ? 'User not available' : user.username,
-                name: !user ? 'User not available' : user.name,
-                email: !user ? 'User not available' : user.email,
-                image: !user ? 'User not available' : user.userImage.secure_url,
-              },
-              adminData: admin,
-            }
-          } else {
-            return {
-              transactionId: trItem.transactionId,
-              transactionItems: itemsDetail,
-              transactionStatus: trItem.transactionStatus,
-              transactionTotal: trItem.transactionTotal,
-              transactionImage: trItem.transactionImage.secure_url,
-              isRejected: trItem.isRejected,
-              rejectedReason: trItem.isRejected && trItem.rejectedReason,
-              isExpired: trItem.isExpired,
-              createdAt: trItem.createdAt,
-              userData: {
-                userId: !user ? 'User not available' : user.userId,
-                username: !user ? 'User not available' : user.username,
-                name: !user ? 'User not available' : user.name,
-                email: !user ? 'User not available' : user.email,
-                image: !user ? 'User not available' : user.userImage.secure_url,
-              },
+            const isExpired = Date.now() > decoded.exp * 1000
+            if (isExpired && trItem.transactionStatus === status.notUploaded) {
+              const expTr = await Transaction.findOneAndUpdate(
+                { transactionId: trItem.transactionId },
+                {
+                  transactionStatus: status.expired,
+                  isExpired: true,
+                }
+              )
 
-              adminData: admin,
+              return {
+                transactionId: expTr.transactionId,
+                transactionItems: itemsDetail,
+                transactionStatus: status.expired,
+                transactionTotal: expTr.transactionTotal,
+                transactionImage: expTr.transactionImage.secure_url,
+                isRejected: expTr.isRejected,
+                rejectedReason: expTr.isRejected && expTr.rejectedReason,
+                isExpired: true,
+                createdAt: expTr.createdAt,
+                userData: {
+                  userId: user.userId,
+                  username: user.username,
+                  name: user.name,
+                  email: user.email,
+                  image: user.userImage.secure_url,
+                },
+                adminData: admin,
+              }
+            } else {
+              return {
+                transactionId: trItem.transactionId,
+                transactionItems: itemsDetail,
+                transactionStatus: trItem.transactionStatus,
+                transactionTotal: trItem.transactionTotal,
+                transactionImage: trItem.transactionImage.secure_url,
+                isRejected: trItem.isRejected,
+                rejectedReason: trItem.isRejected && trItem.rejectedReason,
+                isExpired: trItem.isExpired,
+                createdAt: trItem.createdAt,
+                userData: {
+                  userId: user.userId,
+                  username: user.username,
+                  name: user.name,
+                  email: user.email,
+                  image: user.userImage.secure_url,
+                },
+
+                adminData: admin,
+              }
             }
           }
         })
       )
-      if (trData) {
-        const sortNewest = trData.sort((a, b) => {
+
+      const transaction = trData.filter(el => {
+        return el != null
+      })
+      if (transaction) {
+        const sortNewest = transaction.sort((a, b) => {
           return new Date(b.createdAt) - new Date(a.createdAt)
         })
 

@@ -2,7 +2,7 @@ import User from '../../../models/Users'
 
 const ListWeb = async () => {
   try {
-    const user = await User.find()
+    const user = await User.find({ isVerified: true })
     if (user.length === 0) {
       return {
         success: true,

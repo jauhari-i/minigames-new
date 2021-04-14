@@ -3,6 +3,7 @@ import MyGames from '../../../models/MyGames'
 import Game from '../../../models/Game'
 import { getTimeEnd, getTimeStart } from '../../../constants/timePlay'
 import { generate } from '../../../constants/generateCode'
+import { checkExpired } from '../../../middlewares/CheckExpired'
 
 const GenerateNewCode = async (codeId, data) => {
   const { time, playDate } = data
@@ -16,13 +17,20 @@ const GenerateNewCode = async (codeId, data) => {
         message: 'Code not found',
       }
     } else {
-      const isExpired = Date.now() > playDate
       const game = await Game.findOne({ gameId: code.gameId })
+
+      const playingDate = new Date(playDate)
+
+      const isExpired = checkExpired(
+        playDate,
+        getTimeEnd(time, game.gameDuration)
+      )
+
       const newCode = generate(8)
       const updateQuery = await Codes.updateOne(
         { codeId },
         {
-          playingDate: playDate,
+          playingDate: playingDate,
           timeStart: getTimeStart(time),
           timeEnd: getTimeEnd(time, game.gameDuration),
           uniqueCode: newCode,

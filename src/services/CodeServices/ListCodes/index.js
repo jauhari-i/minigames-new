@@ -2,6 +2,7 @@ import Game from '../../../models/Game'
 import MyGame from '../../../models/MyGames'
 import Codes from '../../../models/Codes'
 import User from '../../../models/Users'
+import { checkExpired } from '../../../middlewares/CheckExpired'
 
 const ListCode = async () => {
   try {
@@ -29,7 +30,7 @@ const ListCode = async () => {
             image: item.userImage.secure_url,
           }))
 
-          const isExpired = Date.now() > code.playingDate
+          const isExpired = checkExpired(code.playingDate, code.timeEnd)
 
           if (!game || !user) {
             return null
@@ -68,7 +69,13 @@ const ListCode = async () => {
                     email: user.email,
                     image: user.userImage.secure_url,
                   },
-                  isExpired: true,
+                  expiredDate: new Date(code.playingDate).setHours(
+                    code.timeEnd,
+                    0,
+                    0,
+                    0
+                  ),
+                  isExpired: isExpired,
                   isPlayed: item.isPlayed,
                   codeId: code.codeId,
                   uniqueCode: code.uniqueCode,
@@ -108,7 +115,13 @@ const ListCode = async () => {
                     email: user.email,
                     image: user.userImage.secure_url,
                   },
-                  isExpired: true,
+                  expiredDate: new Date(code.playingDate).setHours(
+                    code.timeEnd,
+                    0,
+                    0,
+                    0
+                  ),
+                  isExpired: isExpired,
                   isPlayed: item.isPlayed,
                   codeId: code.codeId,
                   uniqueCode: code.uniqueCode,
@@ -121,44 +134,102 @@ const ListCode = async () => {
                 }
               }
             } else {
-              return {
-                myGameId: item.myGameId,
-                gameId: game.gameId,
-                gameData: {
+              const updateMyGames = await MyGame.updateOne(
+                { myGameId: item.myGameId },
+                { isExpired: isExpired }
+              )
+              if (updateMyGames) {
+                return {
+                  myGameId: item.myGameId,
                   gameId: game.gameId,
-                  gameTitle: game.gameTitle,
-                  posterImage: game.posterImage.secure_url,
-                  gameImage: game.gameImage.secure_url,
-                  gameDescription: game.gameDescription,
-                  gamePrice: game.gamePrice,
-                  gameDiscount: game.gameDiscount,
-                  gamePriceAfterDiscount: game.gamePriceAfterDiscount,
-                  gameDifficulty: game.gameDifficulty,
-                  gameRating: game.gameRating,
-                  gameGenre: game.gameGenre,
-                  gameDuration: game.gameDuration,
-                  gameUrl: game.gameUrl,
-                  gameCapacity: game.gameCapacity,
-                  gameReady: game.gameReady,
-                },
-                userId: user.userId,
-                userData: {
+                  gameData: {
+                    gameId: game.gameId,
+                    gameTitle: game.gameTitle,
+                    posterImage: game.posterImage.secure_url,
+                    gameImage: game.gameImage.secure_url,
+                    gameDescription: game.gameDescription,
+                    gamePrice: game.gamePrice,
+                    gameDiscount: game.gameDiscount,
+                    gamePriceAfterDiscount: game.gamePriceAfterDiscount,
+                    gameDifficulty: game.gameDifficulty,
+                    gameRating: game.gameRating,
+                    gameGenre: game.gameGenre,
+                    gameDuration: game.gameDuration,
+                    gameUrl: game.gameUrl,
+                    gameCapacity: game.gameCapacity,
+                    gameReady: game.gameReady,
+                  },
                   userId: user.userId,
-                  username: user.username,
-                  name: user.name,
-                  email: user.email,
-                  image: user.userImage.secure_url,
-                },
-                isExpired: item.isExpired,
-                isPlayed: item.isPlayed,
-                codeId: code.codeId,
-                uniqueCode: code.uniqueCode,
-                members: member,
-                playingSchedule: code.playingDate,
-                timeStart: code.timeStart,
-                timeEnd: code.timeEnd,
-                createdAt: item.createdAt,
-                updatedAt: item.updatedAt,
+                  userData: {
+                    userId: user.userId,
+                    username: user.username,
+                    name: user.name,
+                    email: user.email,
+                    image: user.userImage.secure_url,
+                  },
+                  expiredDate: new Date(code.playingDate).setHours(
+                    code.timeEnd,
+                    0,
+                    0,
+                    0
+                  ),
+                  isExpired: isExpired,
+                  isPlayed: item.isPlayed,
+                  codeId: code.codeId,
+                  uniqueCode: code.uniqueCode,
+                  members: member,
+                  playingSchedule: code.playingDate,
+                  timeStart: code.timeStart,
+                  timeEnd: code.timeEnd,
+                  createdAt: item.createdAt,
+                  updatedAt: item.updatedAt,
+                }
+              } else {
+                return {
+                  myGameId: item.myGameId,
+                  gameId: game.gameId,
+                  gameData: {
+                    gameId: game.gameId,
+                    gameTitle: game.gameTitle,
+                    posterImage: game.posterImage.secure_url,
+                    gameImage: game.gameImage.secure_url,
+                    gameDescription: game.gameDescription,
+                    gamePrice: game.gamePrice,
+                    gameDiscount: game.gameDiscount,
+                    gamePriceAfterDiscount: game.gamePriceAfterDiscount,
+                    gameDifficulty: game.gameDifficulty,
+                    gameRating: game.gameRating,
+                    gameGenre: game.gameGenre,
+                    gameDuration: game.gameDuration,
+                    gameUrl: game.gameUrl,
+                    gameCapacity: game.gameCapacity,
+                    gameReady: game.gameReady,
+                  },
+                  userId: user.userId,
+                  userData: {
+                    userId: user.userId,
+                    username: user.username,
+                    name: user.name,
+                    email: user.email,
+                    image: user.userImage.secure_url,
+                  },
+                  expiredDate: new Date(code.playingDate).setHours(
+                    code.timeEnd,
+                    0,
+                    0,
+                    0
+                  ),
+                  isExpired: isExpired,
+                  isPlayed: item.isPlayed,
+                  codeId: code.codeId,
+                  uniqueCode: code.uniqueCode,
+                  members: member,
+                  playingSchedule: code.playingDate,
+                  timeStart: code.timeStart,
+                  timeEnd: code.timeEnd,
+                  createdAt: item.createdAt,
+                  updatedAt: item.updatedAt,
+                }
               }
             }
           }

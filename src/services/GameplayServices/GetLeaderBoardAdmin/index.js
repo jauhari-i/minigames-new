@@ -18,6 +18,8 @@ const GetLeaderboardUser = async sort => {
 
             const user = await Users.findOne({ userId: userGame.userId })
 
+            if (!user || !userGame) return null
+
             return {
               leaderboardId: item.leaderboardId,
               leaderName: item.teamLeaderName,
@@ -59,8 +61,8 @@ const GetLeaderboardUser = async sort => {
 
       if (sort === 'score') {
         sorted = data.sort((a, b) => {
-          if (a.score < b.score) return -1
-          if (a.score > b.score) return 1
+          if (a.score > b.score) return -1
+          if (a.score < b.score) return 1
           return 0
         })
       } else {

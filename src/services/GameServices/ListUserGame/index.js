@@ -2,6 +2,7 @@ import Game from '../../../models/Game'
 import MyGame from '../../../models/MyGames'
 import Codes from '../../../models/Codes'
 import User from '../../../models/Users'
+import { checkExpired } from '../../../middlewares/CheckExpired'
 
 const ListGameUser = async userId => {
   try {
@@ -19,7 +20,9 @@ const ListGameUser = async userId => {
         userGame.map(async item => {
           const code = await Codes.findOne({ codeId: item.codeId })
 
-          const isExpired = Date.now() > code.playingDate
+          const playDate = code.playingDate
+
+          const expired = checkExpired(playDate, code.timeEnd)
 
           const game = await Game.findOne({ gameId: item.gameId })
           const members = await User.find({ userId: { $in: code.codeMembers } })
@@ -35,7 +38,7 @@ const ListGameUser = async userId => {
           if (!game) {
             return null
           } else {
-            if (isExpired) {
+            if (expired) {
               const updateMygame = await MyGame.updateOne(
                 { myGameId: item.myGameId },
                 { isExpired: true }
@@ -57,7 +60,7 @@ const ListGameUser = async userId => {
                   gameUrl: game.gameUrl,
                   gameCapacity: game.gameCapacity,
                   gameReady: game.gameReady,
-                  canPlay: !isExpired ? true : false,
+                  canPlay: expired,
                   uniqueCode: code.uniqueCode,
                   members: member,
                   playingSchedule: code.playingDate,
@@ -83,7 +86,7 @@ const ListGameUser = async userId => {
                   gameUrl: game.gameUrl,
                   gameCapacity: game.gameCapacity,
                   gameReady: game.gameReady,
-                  canPlay: !isExpired ? true : false,
+                  canPlay: expired,
                   uniqueCode: code.uniqueCode,
                   members: member,
                   playingSchedule: code.playingDate,

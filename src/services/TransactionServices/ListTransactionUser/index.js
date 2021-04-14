@@ -43,32 +43,7 @@ const ListTransactionUser = async userId => {
               }))
 
               if (!game) {
-                return {
-                  gameId: tItem.gameId,
-                  gameData: {
-                    gameId: tItem.gameId,
-                    gameTitle: 'Game is unavaliable',
-                    posterImage: 'Game is unavaliable',
-                    gameImage: 'Game is unavaliable',
-                    gameDescription: 'Game is unavaliable',
-                    gamePrice: 0,
-                    gameDiscount: 0,
-                    gamePriceAfterDiscount: 0,
-                    gameDifficulty: 0,
-                    gameRating: 0,
-                    gameGenre: [''],
-                    gameDuration: 0,
-                    gameUrl: 'Game is unavaliable',
-                    gameCapacity: 0,
-                    gameReady: false,
-                    createdAt: Date.now(),
-                  },
-                  playingDate: tItem.datePlay,
-                  timeStart: tItem.timeStart,
-                  timeEnd: tItem.timeEnd,
-                  itemPrice: tItem.itemPrice,
-                  members: member,
-                }
+                return null
               } else {
                 return {
                   gameId: game.gameId,
@@ -104,6 +79,8 @@ const ListTransactionUser = async userId => {
           const trItems = trItemDetail.filter(el => {
             return el != null
           })
+
+          if (!trItems.length) return null
 
           const decoded = await jwt.decode(
             trItem.paymentToken,
@@ -162,11 +139,15 @@ const ListTransactionUser = async userId => {
           }
         })
       )
-      if (trData) {
-        const sortNewest = trData.sort((a, b) => {
+
+      const trUsers = trData.filter(el => {
+        return el != null
+      })
+
+      if (trUsers.length) {
+        const sortNewest = trUsers.sort((a, b) => {
           return new Date(b.createdAt) - new Date(a.createdAt)
         })
-
         return {
           success: true,
           statusCode: 200,
@@ -174,10 +155,11 @@ const ListTransactionUser = async userId => {
           data: sortNewest,
         }
       } else {
-        throw {
-          success: false,
-          statusCode: 500,
-          message: 'Internal server error',
+        return {
+          success: true,
+          message: 'Get transaction success',
+          data: [],
+          statusCode: 200,
         }
       }
     } else {
