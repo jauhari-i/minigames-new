@@ -14,7 +14,7 @@ const SaveGame = async (
   userId
 ) => {
   try {
-    if (uniqueCode === 'INFINITE') {
+    if (uniqueCode === 'InFinite') {
       return {
         success: true,
         statusCode: 200,

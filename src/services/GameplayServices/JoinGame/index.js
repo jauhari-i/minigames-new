@@ -7,7 +7,7 @@ import moment from 'moment'
 
 const JoinGame = async (uCode, userId) => {
   try {
-    if (uCode === 'INFINITE') {
+    if (uCode === 'InFinite') {
       return {
         success: true,
         statusCode: 200,
@@ -18,7 +18,7 @@ const JoinGame = async (uCode, userId) => {
           userId: userId,
           members: [],
           playDate: Date.now(),
-          uniqueCode: 'INFINITE',
+          uniqueCode: 'InFinite',
         },
       }
     } else {
