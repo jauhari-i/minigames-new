@@ -57,6 +57,7 @@ export const verifyToken = async (req, res, next) => {
   } else {
     const userId = decodedToken.sub
     req.userId = userId
+    req.roles = decodedToken.role
     next()
   }
 }
@@ -88,6 +89,7 @@ export const verifyTokenAdmin = async (req, res, next) => {
   } else {
     const adminId = decodedToken.sub
     req.adminId = adminId
+    req.roles = decodedToken.role
     next()
   }
 }
@@ -119,6 +121,7 @@ export const verifyTokenSuperAdmin = async (req, res, next) => {
   } else {
     const adminId = decodedToken.sub
     req.adminId = adminId
+    req.roles = decodedToken.role
     next()
   }
 }

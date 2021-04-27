@@ -1,13 +1,14 @@
 import Game from '../../../models/Game'
 import Transaction from '../../../models/Transaction'
-import Codes from '../../../models/Codes'
 import User from '../../../models/Users'
 import Admin from '../../../models/Admin'
 import { status } from '../../../constants/transactionStatus'
+import CodeServices from '../../CodeServices'
 
 const GetStatistic = async (adminId, roles) => {
   const adminCount = await Admin.countDocuments()
-  const codeCount = await Codes.countDocuments()
+  const codes = await CodeServices.ListCodes()
+  const codeCount = codes.data.length
   const transactionCount = await Transaction.countDocuments()
   const accTransCount = await Transaction.countDocuments({
     transactionStatus: status.success,
