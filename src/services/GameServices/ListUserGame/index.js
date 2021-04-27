@@ -6,7 +6,7 @@ import { checkExpired } from '../../../middlewares/CheckExpired'
 
 const ListGameUser = async userId => {
   try {
-    const userGame = await MyGame.find({ userId: userId })
+    const userGame = await MyGame.find({ userId: userId, isPlayed: false })
 
     if (userGame.length === 0) {
       return {
@@ -41,67 +41,16 @@ const ListGameUser = async userId => {
             if (expired) {
               const updateMygame = await MyGame.updateOne(
                 { myGameId: item.myGameId },
-                { isExpired: true }
+                { isExpired: true, isPlayed: true }
               )
-              if (updateMygame) {
-                return {
-                  gameId: game.gameId,
-                  gameTitle: game.gameTitle,
-                  posterImage: game.posterImage.secure_url,
-                  gameImage: game.gameImage.secure_url,
-                  gameDescription: game.gameDescription,
-                  gamePrice: game.gamePrice,
-                  gameDiscount: game.gameDiscount,
-                  gamePriceAfterDiscount: game.gamePriceAfterDiscount,
-                  gameDifficulty: game.gameDifficulty,
-                  gameRating: game.gameRating,
-                  gameGenre: game.gameGenre,
-                  gameDuration: game.gameDuration,
-                  gameUrl: game.gameUrl,
-                  gameCapacity: game.gameCapacity,
-                  gameReady: game.gameReady,
-                  canPlay: expired,
-                  uniqueCode: code.uniqueCode,
-                  members: member,
-                  playingSchedule: code.playingDate,
-                  timeStart: code.timeStart,
-                  timeEnd: code.timeEnd,
-                  createdAt: game.createdAt,
-                  createdBy: game.createdBy,
-                }
-              } else {
-                return {
-                  gameId: game.gameId,
-                  gameTitle: game.gameTitle,
-                  posterImage: game.posterImage.secure_url,
-                  gameImage: game.gameImage.secure_url,
-                  gameDescription: game.gameDescription,
-                  gamePrice: game.gamePrice,
-                  gameDiscount: game.gameDiscount,
-                  gamePriceAfterDiscount: game.gamePriceAfterDiscount,
-                  gameDifficulty: game.gameDifficulty,
-                  gameRating: game.gameRating,
-                  gameGenre: game.gameGenre,
-                  gameDuration: game.gameDuration,
-                  gameUrl: game.gameUrl,
-                  gameCapacity: game.gameCapacity,
-                  gameReady: game.gameReady,
-                  canPlay: expired,
-                  uniqueCode: code.uniqueCode,
-                  members: member,
-                  playingSchedule: code.playingDate,
-                  timeStart: code.timeStart,
-                  timeEnd: code.timeEnd,
-                  createdAt: game.createdAt,
-                  createdBy: game.createdBy,
-                }
-              }
+
+              if (updateMygame) return null
             } else {
               const updateMygame = await MyGame.updateOne(
                 { myGameId: item.myGameId },
                 { isExpired: false }
               )
-              if (updateMygame) {
+              if (updateMygame)
                 return {
                   gameId: game.gameId,
                   gameTitle: game.gameTitle,
@@ -127,33 +76,6 @@ const ListGameUser = async userId => {
                   createdAt: game.createdAt,
                   createdBy: game.createdBy,
                 }
-              } else {
-                return {
-                  gameId: game.gameId,
-                  gameTitle: game.gameTitle,
-                  posterImage: game.posterImage.secure_url,
-                  gameImage: game.gameImage.secure_url,
-                  gameDescription: game.gameDescription,
-                  gamePrice: game.gamePrice,
-                  gameDiscount: game.gameDiscount,
-                  gamePriceAfterDiscount: game.gamePriceAfterDiscount,
-                  gameDifficulty: game.gameDifficulty,
-                  gameRating: game.gameRating,
-                  gameGenre: game.gameGenre,
-                  gameDuration: game.gameDuration,
-                  gameUrl: game.gameUrl,
-                  gameCapacity: game.gameCapacity,
-                  gameReady: game.gameReady,
-                  canPlay: item.isPlayed ? false : true,
-                  uniqueCode: code.uniqueCode,
-                  members: member,
-                  playingSchedule: code.playingDate,
-                  timeStart: code.timeStart,
-                  timeEnd: code.timeEnd,
-                  createdAt: game.createdAt,
-                  createdBy: game.createdBy,
-                }
-              }
             }
           }
         })

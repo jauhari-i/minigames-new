@@ -19,6 +19,7 @@ const AddToCart = async (userId, data) => {
       const purcashed = await MyGames.findOne({
         userId: userId,
         gameId: gameId,
+        isPlayed: false,
       })
       if (purcashed) {
         throw {

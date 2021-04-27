@@ -27,7 +27,7 @@ const SaveGame = async (
       const myGame = await MyGames.findOneAndUpdate(
         { codeId: code.codeId },
         {
-          isPlayed: false,
+          isPlayed: true,
         }
       )
 

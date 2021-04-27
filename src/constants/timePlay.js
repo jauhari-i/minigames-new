@@ -1,4 +1,4 @@
-export const timeArray = [9, 12, 15, 19]
+export const timeArray = [7, 9, 12, 14, 16, 19, 21]
 
 export const getTimeStart = t => {
   const tIndex = t - 1

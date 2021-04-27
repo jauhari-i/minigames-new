@@ -17,6 +17,7 @@ const DetailGameAdmin = async (gameId, userId) => {
       const usergame = await MyGame.findOne({
         gameId: game.gameId,
         userId: userId,
+        isPlayed: false,
       })
 
       const gameData = {
@@ -36,7 +37,12 @@ const DetailGameAdmin = async (gameId, userId) => {
         gameCapacity: game.gameCapacity,
         gameReady: game.gameReady,
         canPlay:
-          usergame && !usergame.isExpired && !usergame.isPlayed ? true : false,
+          usergame &&
+          usergame.myGameId &&
+          !usergame.isExpired &&
+          !usergame.isPlayed
+            ? true
+            : false,
         createdAt: game.createdAt,
         createdBy: game.createdBy,
       }

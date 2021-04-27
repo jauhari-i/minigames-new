@@ -19,42 +19,62 @@ const GenerateNewCode = async (codeId, data) => {
     } else {
       const game = await Game.findOne({ gameId: code.gameId })
 
-      const playingDate = new Date(playDate)
+      const mygame = await MyGames.findOne({
+        codeId: codeId,
+        gameId: code.gameId,
+        isPlayed: false,
+      })
 
-      const isExpired = checkExpired(
-        playDate,
-        getTimeEnd(time, game.gameDuration)
-      )
-
-      const newCode = generate(8)
-      const updateQuery = await Codes.updateOne(
-        { codeId },
-        {
-          playingDate: playingDate,
-          timeStart: getTimeStart(time),
-          timeEnd: getTimeEnd(time, game.gameDuration),
-          uniqueCode: newCode,
+      if (!mygame) {
+        throw {
+          success: false,
+          statusCode: 400,
+          message: 'Code already used',
         }
-      )
+      } else {
+        const playingDate = new Date(playDate)
 
-      if (updateQuery) {
-        const updateMyGame = await MyGames.updateOne(
-          { codeId: code.codeId },
+        const isExpired = checkExpired(
+          playDate,
+          getTimeEnd(time, game.gameDuration)
+        )
+
+        const newCode = generate(8)
+        const updateQuery = await Codes.updateOne(
+          { codeId },
           {
-            isExpired: isExpired,
-            isPlayed: false,
-            lastPlayer: '',
-            lastPlayedDate: null,
+            playingDate: playingDate,
+            timeStart: getTimeStart(time),
+            timeEnd: getTimeEnd(time, game.gameDuration),
+            uniqueCode: newCode,
           }
         )
-        if (updateMyGame) {
-          return {
-            success: true,
-            statusCode: 200,
-            message: 'Code generated success',
-            data: {
-              uniqueCode: newCode,
-            },
+
+        if (updateQuery) {
+          const updateMyGame = await MyGames.updateOne(
+            { codeId: code.codeId, isPlayed: false },
+            {
+              isExpired: isExpired,
+              isPlayed: false,
+              lastPlayer: '',
+              lastPlayedDate: null,
+            }
+          )
+          if (updateMyGame) {
+            return {
+              success: true,
+              statusCode: 200,
+              message: 'Code generated success',
+              data: {
+                uniqueCode: newCode,
+              },
+            }
+          } else {
+            throw {
+              success: false,
+              statusCode: 400,
+              message: 'Game is already played',
+            }
           }
         } else {
           throw {
@@ -62,12 +82,6 @@ const GenerateNewCode = async (codeId, data) => {
             statusCode: 500,
             message: 'Internal server error',
           }
-        }
-      } else {
-        throw {
-          success: false,
-          statusCode: 500,
-          message: 'Internal server error',
         }
       }
     }

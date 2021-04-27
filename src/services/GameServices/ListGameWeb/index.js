@@ -18,6 +18,7 @@ const ListGameWeb = async userId => {
           const usergame = await MyGame.findOne({
             gameId: item.gameId,
             userId: userId,
+            isPlayed: false,
           })
           return {
             gameId: item.gameId,
@@ -35,7 +36,13 @@ const ListGameWeb = async userId => {
             gameUrl: item.gameUrl,
             gameCapacity: item.gameCapacity,
             gameReady: item.gameReady,
-            canPlay: usergame && usergame.myGameId ? true : false,
+            canPlay:
+              usergame &&
+              usergame.myGameId &&
+              !usergame.isExpired &&
+              !usergame.isPlayed
+                ? true
+                : false,
             createdAt: item.createdAt,
             createdBy: item.createdBy,
           }

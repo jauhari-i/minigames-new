@@ -30,7 +30,10 @@ const JoinGame = async (uCode, userId) => {
           message: 'Code not found',
         }
       } else {
-        const mG = await MyGames.findOne({ codeId: code.codeId })
+        const mG = await MyGames.findOne({
+          codeId: code.codeId,
+          isPlayed: false,
+        })
         if (!mG) {
           throw {
             success: false,
