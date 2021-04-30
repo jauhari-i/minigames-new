@@ -80,7 +80,12 @@ const ListCode = async () => {
                   codeId: code.codeId,
                   uniqueCode: code.uniqueCode,
                   members: member,
-                  playingSchedule: code.playingDate,
+                  playingSchedule: new Date(code.playingDate).setHours(
+                    code.timeStart,
+                    0,
+                    0,
+                    0
+                  ),
                   timeStart: code.timeStart,
                   timeEnd: code.timeEnd,
                   createdAt: item.createdAt,
@@ -132,7 +137,12 @@ const ListCode = async () => {
                   codeId: code.codeId,
                   uniqueCode: code.uniqueCode,
                   members: member,
-                  playingSchedule: code.playingDate,
+                  playingSchedule: new Date(code.playingDate).setHours(
+                    code.timeStart,
+                    0,
+                    0,
+                    0
+                  ),
                   timeStart: code.timeStart,
                   timeEnd: code.timeEnd,
                   createdAt: item.createdAt,
