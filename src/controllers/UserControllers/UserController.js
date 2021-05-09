@@ -41,7 +41,10 @@ const controller = {
     }
   },
   listUserAdmin: async (req, res) => {
-    const query = await ListUser()
+    const {
+      query: { page, size },
+    } = req
+    const query = await ListUser(page, size)
     if (query) {
       if (!query.success) {
         handleError(query, res)

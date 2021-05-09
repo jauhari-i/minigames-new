@@ -4,8 +4,9 @@ import Admin from '../../../models/Admin'
 import Transaction from '../../../models/Transaction'
 import { status } from '../../../constants/transactionStatus'
 import jwt from 'jsonwebtoken'
+import { calculateLimitAndOffset, paginate } from 'paginate-info'
 
-const ListTransactionAdmin = async () => {
+const ListTransactionAdmin = async (currentPage, pageSize) => {
   try {
     const tr = await Transaction.find({})
 
@@ -156,11 +157,16 @@ const ListTransactionAdmin = async () => {
           return new Date(b.createdAt) - new Date(a.createdAt)
         })
 
+        const { limit, offset } = calculateLimitAndOffset(currentPage, pageSize)
+        const count = sortNewest.length
+        const paginatedData = sortNewest.slice(offset, offset + limit)
+        const paginationInfo = paginate(currentPage, count, paginatedData)
+
         return {
           success: true,
           statusCode: 200,
           message: 'Get transaction success',
-          data: sortNewest,
+          data: { data: paginatedData, meta: paginationInfo },
         }
       } else {
         throw {
@@ -173,7 +179,15 @@ const ListTransactionAdmin = async () => {
       return {
         success: true,
         message: 'Get transaction success',
-        data: [],
+        data: {
+          data: [],
+          meta: {
+            currentPage: currentPage,
+            pageCount: 1,
+            pageSize: pageSize,
+            count: 0,
+          },
+        },
         statusCode: 200,
       }
     }

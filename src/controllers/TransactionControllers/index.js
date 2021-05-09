@@ -92,7 +92,10 @@ const controller = {
     }
   },
   listTransactionAdminHandler: async (req, res) => {
-    const query = await ListTransactionAdmin()
+    const {
+      query: { page, size },
+    } = req
+    const query = await ListTransactionAdmin(page, size)
     if (query) {
       if (!query.success) {
         handleError(query, res)

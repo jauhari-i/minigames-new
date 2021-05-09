@@ -1,6 +1,7 @@
 import User from '../../../models/Users'
+import { calculateLimitAndOffset, paginate } from 'paginate-info'
 
-const ListUser = async () => {
+const ListUser = async (currentPage, pageSize) => {
   try {
     const user = await User.find()
     if (user.length === 0) {
@@ -25,11 +26,17 @@ const ListUser = async () => {
         online: item.online,
         phoneNumber: item.phoneNumber,
       }))
+
+      const { limit, offset } = calculateLimitAndOffset(currentPage, pageSize)
+      const count = dataUser.length
+      const paginatedData = dataUser.slice(offset, offset + limit)
+      const paginationInfo = paginate(currentPage, count, paginatedData)
+
       return {
         success: true,
         statusCode: 200,
         message: 'Get user success',
-        data: dataUser,
+        data: { data: paginatedData, meta: paginationInfo },
       }
     }
   } catch (error) {
