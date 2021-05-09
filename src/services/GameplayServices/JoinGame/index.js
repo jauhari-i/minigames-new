@@ -115,7 +115,6 @@ const JoinGame = async (uCode, userId) => {
                           codeId: code.codeId,
                         },
                         {
-                          isPlayed: true,
                           lastPlayedDate: Date.now(),
                           lastPlayer: user.userId,
                         }
