@@ -21,6 +21,7 @@ import {
   requestVerification,
   verifyUser,
 } from './auth/auth_handler'
+import { detailUser, listNames, listUsers } from './user/user_handler'
 
 const router = Router()
 
@@ -39,6 +40,11 @@ router.post('/users/login', basicAuth, loginUser)
 router.post('/users/register', basicAuth, registerUser)
 
 router.get('/users/profile-user', verifyToken, profileUser)
+
+router.get('/users/list', verifyTokenAdmin, listUsers)
+router.get('/users/list-name', verifyToken, listNames)
+
+router.get('/users/detail/:userId', verifyTokenAdmin, detailUser)
 
 router.get('/verify/:token', basicAuth, verifyUser)
 router.get('/request/email/:token', basicAuth, requestVerification)
