@@ -8,13 +8,12 @@ const app = express()
 
 configureApp(app)
 
-mysqlConnection.getConnection((err, connection) => {
-  if (connection) {
-    console.log('Connected to mysql database')
-  } else {
-    console.log(err)
-  }
-})
+mysqlConnection
+  .getConnection()
+  .then(() => {
+    console.log('Connected to database')
+  })
+  .catch(err => console.log(err))
 
 app.listen(port, () => {
   console.log('Server is running on port ' + port)

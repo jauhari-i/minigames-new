@@ -13,6 +13,9 @@ const Uploader = async imgstr => {
   const img = await Cloudinary.uploader.upload(imgstr, {
     overwrite: true,
     invalidate: true,
+    use_filename: true,
+    folder: 'minigames',
+    resource_type: 'auto',
   })
 
   return img

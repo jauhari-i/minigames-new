@@ -52,7 +52,7 @@ export const verifyToken = async (req, res, next) => {
     }
     return handleError({ statusCode: 401, message: 'Token is not valid!' }, res)
   }
-  if (decodedToken.role !== 0) {
+  if (decodedToken.role !== 9) {
     return handleError({ statusCode: 403, message: 'Access Denied!' }, res)
   } else {
     const userId = decodedToken.sub
@@ -84,7 +84,7 @@ export const verifyTokenAdmin = async (req, res, next) => {
     }
     return handleError({ statusCode: 401, message: 'Token is not valid!' }, res)
   }
-  if (decodedToken.role === 0) {
+  if (decodedToken.role === 9) {
     return handleError({ statusCode: 403, message: 'Access Denied!' }, res)
   } else {
     const adminId = decodedToken.sub
@@ -116,7 +116,7 @@ export const verifyTokenSuperAdmin = async (req, res, next) => {
     }
     return handleError({ statusCode: 401, message: 'Token is not valid!' }, res)
   }
-  if (decodedToken.role !== 2) {
+  if (decodedToken.role !== 1) {
     return handleError({ statusCode: 403, message: 'Access Denied!' }, res)
   } else {
     const adminId = decodedToken.sub
