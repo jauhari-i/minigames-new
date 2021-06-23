@@ -11,7 +11,6 @@ import {
   CONFLICT,
 } from 'http-status'
 import moment from 'moment'
-import { paginate, calculateLimitAndOffset } from 'paginate-info'
 import { isValidURL } from '../../helpers/validateUrl'
 
 const generateSalt = async length => {
@@ -88,67 +87,58 @@ export const findAdminById = async adminId => {
   }
 }
 
-export const findAdmin = async (page, size) => {
+export const findAdmin = async (page = 1, size = 10) => {
   try {
     return await db
-      .query(
-        'SELECT tb_admin.adminId, tb_admin.name, tb_admin.email, tb_admin.createdAt, tb_admin.updatedAt, tb_admin.lastLogin, tb_image.secure_url FROM tb_admin INNER JOIN tb_image ON tb_admin.imageId = tb_image.imageID WHERE isSuper = 0'
-      )
-      .then(res => {
-        const row = res[0]
+      .query('SELECT COUNT(*) as total FROM tb_admin')
+      .then(async result => {
+        const adminRows = result[0][0].total
+        const skip = (page - 1) * size
+        const limit = skip + ',' + size
+        return await db
+          .query(
+            'SELECT tb_admin.adminId, tb_admin.name, tb_admin.email, tb_admin.createdAt, tb_admin.updatedAt, tb_admin.lastLogin, tb_image.secure_url FROM tb_admin INNER JOIN tb_image ON tb_admin.imageId = tb_image.imageID WHERE isSuper = 0 ORDER BY tb_admin.createdAt DESC LIMIT ' +
+              limit
+          )
+          .then(async res => {
+            const row = res[0]
 
-        const { limit, offset } = calculateLimitAndOffset(page, size)
-        if (row.length) {
-          const count = row.length
-          const paginatedData = row.slice(offset, offset + limit)
-          const paginationInfo = paginate(page, count, paginatedData)
+            const data = row.map(item => ({
+              adminId: item.adminId,
+              name: item.name,
+              email: item.email,
+              image: item.secure_url,
+              lastLogin: item.lastLogin,
+              createdAt: item.createdAt,
+              updatedAt: item.updatedAt,
+            }))
 
-          const meta = {
-            page: paginationInfo.currentPage,
-            pageCount: paginationInfo.pageCount,
-            size: paginationInfo.pageSize,
-            count: paginationInfo.count,
-          }
+            const totalPage = Math.ceil(adminRows / size)
 
-          return {
-            code: OK,
-            message: 'Get admin success',
-            data: { data: paginatedData, meta },
-          }
-        } else {
-          const data = row.map(item => ({
-            adminId: item.adminId,
-            name: item.name,
-            email: item.email,
-            image: item.secure_url,
-            lastLogin: item.lastLogin,
-            createdAt: item.createdAt,
-            updatedAt: item.updatedAt,
-          }))
+            const meta = {
+              page: Number(page),
+              size: Number(size),
+              totalData: data.length,
+              totalPage,
+            }
 
-          const count = data.length
-          const paginatedData = data.slice(offset, offset + limit)
-          const paginationInfo = paginate(page, count, paginatedData)
-
-          const meta = {
-            page: paginationInfo.currentPage,
-            pageCount: paginationInfo.pageCount,
-            size: paginationInfo.pageSize,
-            count: paginationInfo.count,
-          }
-
-          return {
-            code: OK,
-            message: 'Get admin success',
-            data: { data: paginatedData, meta },
-          }
-        }
+            return {
+              code: OK,
+              message: 'Get admins success',
+              data: { data: data, meta },
+            }
+          })
+          .catch(() => {
+            return {
+              code: INTERNAL_SERVER_ERROR,
+              message: 'Internal server error',
+            }
+          })
       })
       .catch(() => {
         return {
           code: INTERNAL_SERVER_ERROR,
           message: 'Internal server error',
-          data: { data: [], meta: {} },
         }
       })
   } catch (error) {

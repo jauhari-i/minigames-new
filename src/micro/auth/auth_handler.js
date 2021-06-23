@@ -16,6 +16,7 @@ import {
   CREATED,
 } from 'http-status'
 import jsonwebtoken from 'jsonwebtoken'
+import { validateLogin, validateRegisterUser } from '../validation'
 
 const comparePassword = async (password, hashed) => {
   const isMatch = await bcrypt.compareSync(password, hashed)
@@ -29,53 +30,62 @@ export const loginUser = async (req, res) => {
     body: { email, password },
   } = req
 
-  const user = await findUserByEmail(email)
+  const validation = await validateLogin({ email, password })
 
-  const { code, data, msg } = user
-
-  if (code === 404) {
-    return res.status(NOT_FOUND).json({
-      code: NOT_FOUND,
-      error: true,
-      message: msg,
+  if (validation.error) {
+    return res.status(BAD_REQUEST).json({
+      code: BAD_REQUEST,
+      message: validation.message,
     })
   } else {
-    if (data.isVerified === 0) {
+    const user = await findUserByEmail(email)
+
+    const { code, data, msg } = user
+
+    if (code === 404) {
       return res.status(NOT_FOUND).json({
         code: NOT_FOUND,
         error: true,
-        message: 'User not verified',
+        message: msg,
       })
     } else {
-      const isMatch = await comparePassword(password, data.password)
-      if (isMatch) {
-        const payload = {
-          sub: data.userId,
-          role: 9,
-          email: data.email,
-        }
-        const token = await generateToken(payload)
-        const lastLogin = await updateLastLogin(email)
-        if (lastLogin === INTERNAL_SERVER_ERROR) {
-          return res.status(INTERNAL_SERVER_ERROR).json({
-            code: INTERNAL_SERVER_ERROR,
-            message: 'Internal server error',
-            error: true,
-          })
-        }
-        return res.status(OK).json({
-          code: OK,
-          message: 'Login Success',
-          data: {
-            accessToken: token,
-          },
+      if (data.isVerified === 0) {
+        return res.status(NOT_FOUND).json({
+          code: NOT_FOUND,
+          error: true,
+          message: 'User not verified',
         })
       } else {
-        return res.status(BAD_REQUEST).json({
-          code: BAD_REQUEST,
-          error: true,
-          message: 'Password tidak sama',
-        })
+        const isMatch = await comparePassword(password, data.password)
+        if (isMatch) {
+          const payload = {
+            sub: data.userId,
+            role: 9,
+            email: data.email,
+          }
+          const token = await generateToken(payload)
+          const lastLogin = await updateLastLogin(email)
+          if (lastLogin === INTERNAL_SERVER_ERROR) {
+            return res.status(INTERNAL_SERVER_ERROR).json({
+              code: INTERNAL_SERVER_ERROR,
+              message: 'Internal server error',
+              error: true,
+            })
+          }
+          return res.status(OK).json({
+            code: OK,
+            message: 'Login Success',
+            data: {
+              accessToken: token,
+            },
+          })
+        } else {
+          return res.status(BAD_REQUEST).json({
+            code: BAD_REQUEST,
+            error: true,
+            message: 'Password tidak sama',
+          })
+        }
       }
     }
   }
@@ -83,22 +93,37 @@ export const loginUser = async (req, res) => {
 
 export const registerUser = async (req, res) => {
   const {
-    body: { name, username, email, password },
+    body: { name, username, email, password, confirmPassword },
   } = req
 
-  const resp = await insertUser({ name, username, email, password })
+  const validation = await validateRegisterUser({
+    name,
+    username,
+    email,
+    password,
+    confirmPassword,
+  })
 
-  if (resp.code !== CREATED) {
-    return res.status(resp.code).json({
-      code: resp.code,
-      error: true,
-      message: resp.msg,
+  if (validation.error) {
+    return res.status(BAD_REQUEST).json({
+      code: BAD_REQUEST,
+      message: validation.message,
     })
   } else {
-    return res.status(CREATED).json({
-      code: CREATED,
-      message: 'User berhasil dibuat',
-    })
+    const resp = await insertUser({ name, username, email, password })
+
+    if (resp.code !== CREATED) {
+      return res.status(resp.code).json({
+        code: resp.code,
+        error: true,
+        message: resp.msg,
+      })
+    } else {
+      return res.status(CREATED).json({
+        code: CREATED,
+        message: 'User berhasil dibuat',
+      })
+    }
   }
 }
 

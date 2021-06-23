@@ -21,6 +21,7 @@ import {
   requestVerification,
   verifyUser,
 } from './auth/auth_handler'
+import { addGame, listGameAdmin } from './game/game_handler'
 import { detailUser, listNames, listUsers } from './user/user_handler'
 
 const router = Router()
@@ -48,5 +49,8 @@ router.get('/users/detail/:userId', verifyTokenAdmin, detailUser)
 
 router.get('/verify/:token', basicAuth, verifyUser)
 router.get('/request/email/:token', basicAuth, requestVerification)
+
+router.post('/game/add', verifyTokenAdmin, addGame)
+router.get('/game/list/admin', verifyTokenAdmin, listGameAdmin)
 
 export { router }

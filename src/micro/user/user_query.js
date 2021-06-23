@@ -1,54 +1,59 @@
 import { db } from '../../db/mysqlConnection'
 import { OK, INTERNAL_SERVER_ERROR, NOT_FOUND } from 'http-status'
-import { paginate, calculateLimitAndOffset } from 'paginate-info'
-// import bcrypt from 'bcryptjs'
-// import { Uploader, DeleteImage } from '../../middlewares/UploadImage'
-// import { v4 as uuid } from 'uuid'
-// import moment from 'moment'
-// import { isValidURL } from '../../helpers/validateUrl'
 
 export const findUsers = async (page = 1, size = 10) => {
   return await db
-    .query(
-      'SELECT tb_users.*, tb_image.secure_url FROM tb_users INNER JOIN tb_image ON tb_users.imageId=tb_image.imageId'
-    )
-    .then(query => {
-      const row = query[0]
+    .query('SELECT COUNT(*) as total FROM tb_users')
+    .then(async result => {
+      const userRows = result[0][0].total
+      const skip = (page - 1) * size
+      const limit = skip + ',' + size
+      return await db
+        .query(
+          'SELECT tb_users.*, tb_image.secure_url FROM tb_users INNER JOIN tb_image ON tb_users.imageId=tb_image.imageId ORDER BY tb_users.createdAt DESC LIMIT ' +
+            limit
+        )
+        .then(query => {
+          const row = query[0]
 
-      const { limit, offset } = calculateLimitAndOffset(page, size)
+          const data = row.map(item => ({
+            userId: item.userId,
+            name: item.name,
+            email: item.email,
+            image: item.secure_url,
+            username: item.username,
+            isVerified: item.isVerified === 1 ? true : false,
+            verifiedAt: item.verifiedAt,
+            city: item.city,
+            province: item.province,
+            birthday: item.birthday,
+            phoneNumber: item.phoneNumber,
+            lastLogin: item.lastLogin,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
+          }))
 
-      const data = row.map(item => ({
-        userId: item.userId,
-        name: item.name,
-        email: item.email,
-        image: item.secure_url,
-        username: item.username,
-        isVerified: item.isVerified === 1 ? true : false,
-        verifiedAt: item.verifiedAt,
-        city: item.city,
-        province: item.province,
-        birthday: item.birthday,
-        phoneNumber: item.phoneNumber,
-        lastLogin: item.lastLogin,
-        createdAt: item.createdAt,
-        updatedAt: item.updatedAt,
-      }))
-      const count = data.length
-      const paginatedData = data.slice(offset, offset + limit)
-      const paginationInfo = paginate(page, count, paginatedData)
+          const totalPage = Math.ceil(userRows / size)
 
-      const meta = {
-        page: paginationInfo.currentPage,
-        pageCount: paginationInfo.pageCount,
-        size: paginationInfo.pageSize,
-        count: paginationInfo.count,
-      }
+          const meta = {
+            page: Number(page),
+            size: Number(size),
+            totalData: data.length,
+            totalPage,
+          }
 
-      return {
-        code: OK,
-        message: 'Get admin success',
-        data: { data: paginatedData, meta },
-      }
+          return {
+            code: OK,
+            message: 'Get users success',
+            data: { data: data, meta },
+          }
+        })
+        .catch(() => {
+          return {
+            code: INTERNAL_SERVER_ERROR,
+            message: 'Internal server error!',
+          }
+        })
     })
     .catch(() => {
       return {

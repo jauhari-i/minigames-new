@@ -18,6 +18,8 @@ import {
   CREATED,
 } from 'http-status'
 
+import { validateLogin, validateRegisterAdmin } from '../validation'
+
 const comparePassword = async (password, hashed) => {
   const isMatch = await bcrypt.compareSync(password, hashed)
 
@@ -29,62 +31,81 @@ export const loginAdmin = async (req, res) => {
   const {
     body: { email, password },
   } = req
-  const { code, msg, data } = await findAdminByEmail(email)
-
-  if (code === 404) {
-    return res.status(NOT_FOUND).json({
-      code: NOT_FOUND,
+  const validation = await validateLogin({ email, password })
+  if (validation.error) {
+    return res.status(BAD_REQUEST).json({
+      code: BAD_REQUEST,
+      message: validation.message,
       error: true,
-      message: msg,
     })
   } else {
-    const isMatch = await comparePassword(password, data.password)
-    if (isMatch) {
-      const payload = {
-        sub: data.adminId,
-        role: data.isSuper,
-        email: data.email,
-      }
-      const token = await generateToken(payload)
-      const lastLogin = await updateLastLogin(email)
-      if (lastLogin === INTERNAL_SERVER_ERROR) {
-        return res.status(INTERNAL_SERVER_ERROR).json({
-          code: INTERNAL_SERVER_ERROR,
-          message: 'Internal server error',
-          error: true,
-        })
-      }
-      return res.status(OK).json({
-        code: OK,
-        message: 'Login Success',
-        data: {
-          accessToken: token,
-        },
+    const { code, msg, data } = await findAdminByEmail(email)
+
+    if (code === 404) {
+      return res.status(NOT_FOUND).json({
+        code: NOT_FOUND,
+        error: true,
+        message: msg,
       })
     } else {
-      return res.status(BAD_REQUEST).json({
-        code: BAD_REQUEST,
-        error: true,
-        message: 'Password not match',
-      })
+      const isMatch = await comparePassword(password, data.password)
+      if (isMatch) {
+        const payload = {
+          sub: data.adminId,
+          role: data.isSuper,
+          email: data.email,
+        }
+        const token = await generateToken(payload)
+        const lastLogin = await updateLastLogin(email)
+        if (lastLogin === INTERNAL_SERVER_ERROR) {
+          return res.status(INTERNAL_SERVER_ERROR).json({
+            code: INTERNAL_SERVER_ERROR,
+            message: 'Internal server error',
+            error: true,
+          })
+        }
+        return res.status(OK).json({
+          code: OK,
+          message: 'Login Success',
+          data: {
+            accessToken: token,
+          },
+        })
+      } else {
+        return res.status(BAD_REQUEST).json({
+          code: BAD_REQUEST,
+          error: true,
+          message: 'Password not match',
+        })
+      }
     }
   }
 }
 
 export const registerAdmin = async (req, res) => {
-  const { code, msg } = await insertAdminToDB(req.body)
+  const validation = await validateRegisterAdmin(req.body)
 
-  if (code !== CREATED) {
-    return res.status(code).json({
-      code: code,
+  if (validation.error) {
+    return res.status(BAD_REQUEST).json({
+      code: BAD_REQUEST,
+      message: validation.message,
       error: true,
-      message: msg,
     })
   } else {
-    return res.status(CREATED).json({
-      code: CREATED,
-      message: 'Admin inserted',
-    })
+    const { code, msg } = await insertAdminToDB(req.body)
+
+    if (code !== CREATED) {
+      return res.status(code).json({
+        code: code,
+        error: true,
+        message: msg,
+      })
+    } else {
+      return res.status(CREATED).json({
+        code: CREATED,
+        message: 'Admin inserted',
+      })
+    }
   }
 }
 
