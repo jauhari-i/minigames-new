@@ -34,3 +34,16 @@ export const getGameNames = async () => {
       return []
     })
 }
+
+export const getGameUpdateNames = async gameId => {
+  return await db
+    .query(`SELECT gameTitle FROM tb_game WHERE gameId != ${gameId}`)
+    .then(result => {
+      const row = result[0]
+      const title = row.map(item => item.gameTitle)
+      return title
+    })
+    .catch(() => {
+      return []
+    })
+}
