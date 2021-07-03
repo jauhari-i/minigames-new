@@ -26,6 +26,8 @@ import {
   listGameAdmin,
   detailGameAdmin,
   updateGameAdmin,
+  deleteGameAdmin,
+  updateGameStatus,
 } from './game/game_handler'
 import { detailUser, listNames, listUsers } from './user/user_handler'
 
@@ -59,5 +61,11 @@ router.post('/game/add', verifyTokenAdmin, addGame)
 router.get('/game/list/admin', verifyTokenAdmin, listGameAdmin)
 router.get('/game/detail/:gameId', verifyTokenAdmin, detailGameAdmin)
 router.put('/game/update/:gameId', verifyTokenAdmin, updateGameAdmin)
+router.put(
+  '/game/status/:gameId/active/:status',
+  verifyTokenAdmin,
+  updateGameStatus
+)
+router.delete('/game/delete/:gameId', verifyTokenAdmin, deleteGameAdmin)
 
 export { router }

@@ -220,62 +220,69 @@ const updateGame = async (gameId, data) => {
     .then(async res => {
       const row = res[0][0]
 
-      let newimg
+      if (row.gameId) {
+        let newimg
 
-      if (image === row.secure_url && isValidURL(image)) {
-        newimg = image
+        if (image === row.secure_url && isValidURL(image)) {
+          newimg = image
+        } else {
+          newimg = await Uploader(image)
+        }
+
+        if (newimg.public_id) {
+          await db.query(
+            'INSERT INTO tb_image (imageId, secure_url) VALUES (?,?)',
+            [newimg.public_id, newimg.secure_url]
+          )
+          await DeleteImage(row.imageId)
+        }
+
+        let discountPrice
+        if (discount > 0) {
+          let disc = price * (discount / 100)
+          discountPrice = price - disc
+        } else {
+          discountPrice = price
+        }
+
+        return await db
+          .query('UPDATE tb_game SET ? WHERE gameId = ?', [
+            {
+              gameTitle: title,
+              gameDescription: description,
+              gamePrice: price,
+              gameDiscount: discount,
+              gamePriceAfterDisc: discountPrice,
+              gameDiff: difficulty,
+              gameDuration: duration,
+              gameRating: rating,
+              gameUrl: url,
+              gameCapacity: capacity,
+              gameActive: ready,
+              gameGenre: JSON.stringify(genre),
+              imageId: newimg !== image ? newimg.public_id : row.imageId,
+            },
+            gameId,
+          ])
+          .then(() => {
+            return {
+              code: OK,
+              message: 'Game updated',
+            }
+          })
+          .catch(err => {
+            return {
+              code: INTERNAL_SERVER_ERROR,
+              message: INTERNAL_SERVER_ERROR,
+              err,
+            }
+          })
       } else {
-        newimg = await Uploader(image)
+        return {
+          code: NOT_FOUND,
+          message: 'Game not found',
+        }
       }
-
-      if (newimg.public_id) {
-        await db.query(
-          'INSERT INTO tb_image (imageId, secure_url) VALUES (?,?)',
-          [newimg.public_id, newimg.secure_url]
-        )
-        await DeleteImage(row.imageId)
-      }
-
-      let discountPrice
-      if (discount > 0) {
-        let disc = price * (discount / 100)
-        discountPrice = price - disc
-      } else {
-        discountPrice = price
-      }
-
-      return await db
-        .query('UPDATE tb_game SET ? WHERE gameId = ?', [
-          {
-            gameTitle: title,
-            gameDescription: description,
-            gamePrice: price,
-            gameDiscount: discount,
-            gamePriceAfterDisc: discountPrice,
-            gameDiff: difficulty,
-            gameDuration: duration,
-            gameRating: rating,
-            gameUrl: url,
-            gameCapacity: capacity,
-            gameActive: ready,
-            gameGenre: JSON.stringify(genre),
-            imageId: newimg !== image ? newimg.public_id : row.imageId,
-          },
-          gameId,
-        ])
-        .then(() => {
-          return {
-            code: OK,
-            message: 'Game updated',
-          }
-        })
-        .catch(err => {
-          return {
-            code: INTERNAL_SERVER_ERROR,
-            message: INTERNAL_SERVER_ERROR,
-            err,
-          }
-        })
     })
     .catch(() => {
       return {
@@ -286,6 +293,65 @@ const updateGame = async (gameId, data) => {
     })
 }
 
-// const deleteGame = async gameId => {}
+const deleteGame = async gameId => {
+  return await db
+    .query('SELECT * FROM tb_game WHERE gameId = ?', [gameId])
+    .then(async data => {
+      const row = data[0][0]
+      if (row.gameId) {
+        await DeleteImage(row.imageId)
 
-export { findGame, findGameById, insertGame, updateGame }
+        return await db
+          .query('DELETE FROM tb_game WHERE gameId = ?', [gameId])
+          .then(() => {
+            return {
+              code: OK,
+              message: 'Game deleted',
+            }
+          })
+          .catch(err => {
+            return err
+          })
+      } else {
+        return {
+          code: NOT_FOUND,
+          message: 'Game not found!',
+        }
+      }
+    })
+    .catch(() => {
+      return {
+        code: INTERNAL_SERVER_ERROR,
+        message: 'Internal server error',
+      }
+    })
+}
+
+const updateStatus = async (gameId, status) => {
+  return await db
+    .query('UPDATE tb_game SET ? WHERE gameId = ?', [
+      { gameActive: status ? 1 : 0 },
+      gameId,
+    ])
+    .then(() => {
+      return {
+        code: OK,
+        message: 'Game status changed',
+      }
+    })
+    .catch(() => {
+      return {
+        code: INTERNAL_SERVER_ERROR,
+        message: 'Internal server error',
+      }
+    })
+}
+
+export {
+  findGame,
+  findGameById,
+  insertGame,
+  updateGame,
+  deleteGame,
+  updateStatus,
+}

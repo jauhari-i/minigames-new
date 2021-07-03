@@ -1,5 +1,12 @@
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from 'http-status'
-import { findGame, insertGame, findGameById, updateGame } from './game_query'
+import {
+  findGame,
+  insertGame,
+  findGameById,
+  updateGame,
+  deleteGame,
+  updateStatus,
+} from './game_query'
 
 import { validateGame, validateUpdateGame } from '../validation'
 
@@ -81,5 +88,37 @@ export const updateGameAdmin = async (req, res) => {
     } else {
       return res.status(query.code).json(query)
     }
+  }
+}
+
+export const deleteGameAdmin = async (req, res) => {
+  const {
+    params: { gameId },
+  } = req
+
+  const query = await deleteGame(gameId)
+  if (!query.code) {
+    return res.status(INTERNAL_SERVER_ERROR).json({
+      code: INTERNAL_SERVER_ERROR,
+      message: 'Internal server error',
+    })
+  } else {
+    return res.status(query.code).json(query)
+  }
+}
+
+export const updateGameStatus = async (req, res) => {
+  const {
+    params: { gameId, status },
+  } = req
+
+  const query = await updateStatus(gameId, status)
+  if (!query.code) {
+    return res.status(INTERNAL_SERVER_ERROR).json({
+      code: INTERNAL_SERVER_ERROR,
+      message: 'Internal server error',
+    })
+  } else {
+    return res.status(query.code).json(query)
   }
 }
