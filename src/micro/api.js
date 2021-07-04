@@ -30,6 +30,7 @@ import {
   updateGameStatus,
 } from './game/game_handler'
 import { detailUser, listNames, listUsers } from './user/user_handler'
+import { addToCart, getUserCart, removeFromCart } from './cart/cart_handler'
 
 const router = Router()
 
@@ -67,5 +68,9 @@ router.put(
   updateGameStatus
 )
 router.delete('/game/delete/:gameId', verifyTokenAdmin, deleteGameAdmin)
+
+router.post('/cart/add/item', verifyToken, addToCart)
+router.delete('/cart/remove/item/:itemId', verifyToken, removeFromCart)
+router.get('/cart/user', verifyToken, getUserCart)
 
 export { router }

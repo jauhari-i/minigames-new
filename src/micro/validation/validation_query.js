@@ -47,3 +47,16 @@ export const getGameUpdateNames = async gameId => {
       return []
     })
 }
+
+export const getUserIds = async () => {
+  return await db
+    .query('SELECT userId FROM tb_users')
+    .then(result => {
+      const row = result[0]
+      const members = row.map(item => item.userId)
+      return members
+    })
+    .catch(() => {
+      return []
+    })
+}

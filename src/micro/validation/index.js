@@ -5,6 +5,7 @@ import {
   getGameNames,
   getGameUpdateNames,
 } from './validation_query'
+import { timeArray } from '../../constants/timePlay'
 
 export const validateLogin = async data => {
   const rule = {
@@ -408,6 +409,67 @@ export const validateUpdateGame = async (data, gameId) => {
     return {
       error: true,
       message: validation.url[0],
+    }
+  } else {
+    return {
+      error: false,
+      message: '',
+    }
+  }
+}
+
+export const validateCart = async data => {
+  const rule = {
+    gameId: {
+      presence: { message: 'is required' },
+    },
+    date: {
+      presence: { message: 'is required' },
+    },
+    time: {
+      presence: { message: 'is required' },
+      numericality: {
+        onlyInteger: true,
+        greaterThanOrEqualTo: 0,
+        lessThanOrEqualTo: timeArray.length,
+        notLessThanOrEqualTo: 'Time is not valid',
+        notGreaterThanOrEqualTo: 'Time is not valid',
+        notIntefet: 'Time is not valid',
+        strict: true,
+        noString: true,
+      },
+    },
+    members: {
+      presence: { message: 'is required' },
+    },
+  }
+
+  const validation = await validate(data, rule)
+
+  if (validation === undefined) {
+    return {
+      error: false,
+      message: '',
+    }
+  } else if (validation.gameId) {
+    return {
+      error: true,
+      message: validation.gameId[0],
+    }
+  } else if (validation.date) {
+    return {
+      error: true,
+      message: validation.date[0],
+    }
+  } else if (validation.time) {
+    return {
+      error: true,
+      message: validation.time[0],
+    }
+  } else if (validation.members) {
+    return {
+      error: true,
+      message: validation.members[0],
     }
   } else {
     return {
