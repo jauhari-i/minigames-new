@@ -13,7 +13,6 @@ import jwt from 'jsonwebtoken'
 import { DeleteImage, Uploader } from '../../middlewares/UploadImage'
 import { generate } from '../../constants/generateCode'
 import moment from 'moment'
-import e from 'cors'
 
 var mysqlTimestamp = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
 
