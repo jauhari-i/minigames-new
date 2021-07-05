@@ -478,3 +478,30 @@ export const validateCart = async data => {
     }
   }
 }
+
+export const validateReject = async data => {
+  const rule = {
+    reason: {
+      presence: { message: 'is required' },
+    },
+  }
+
+  const validation = await validate(data, rule)
+
+  if (validation === undefined) {
+    return {
+      error: false,
+      message: '',
+    }
+  } else if (validation.reason) {
+    return {
+      error: true,
+      message: validation.reason[0],
+    }
+  } else {
+    return {
+      error: false,
+      message: '',
+    }
+  }
+}

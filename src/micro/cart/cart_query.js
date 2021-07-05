@@ -21,16 +21,20 @@ const addItemToCart = async (data, userId) => {
   }
 
   return await db
-    .query('SELECT * FROM tb_cart WHERE userId = ?', [userId])
+    .query('SELECT * FROM tb_cart WHERE userId = ? AND isCheckout = 0', [
+      userId,
+    ])
     .then(async c => {
       const cartRow = c[0]
 
       let cartId
-
+      let cartTotal
       if (cartRow.length) {
         cartId = cartRow[0].cartId
+        cartTotal = cartRow[0].total
       } else {
         cartId = uuid()
+        cartTotal = 0
         await db.query(
           'INSERT INTO tb_cart (cartId, total, userId) VALUES (?,?,?)',
           [cartId, 0, userId]
@@ -109,7 +113,7 @@ const addItemToCart = async (data, userId) => {
                         })
                       )
                       if (insertMembers[members.length - 1] === 1) {
-                        const newTotal = total + cartRow[0].total
+                        const newTotal = total + cartTotal
                         return await db
                           .query('UPDATE tb_cart SET ? WHERE cartId = ?', [
                             { total: newTotal },
@@ -137,8 +141,9 @@ const addItemToCart = async (data, userId) => {
                         }
                       }
                     })
-                    .catch(async () => {
+                    .catch(async err => {
                       await failedAction(itemId, [])
+                      console.log(err)
                       return {
                         code: INTERNAL_SERVER_ERROR,
                         message: 'Internal server error',
@@ -146,7 +151,8 @@ const addItemToCart = async (data, userId) => {
                     })
                 }
               })
-              .catch(() => {
+              .catch(err => {
+                console.log(err)
                 return {
                   code: INTERNAL_SERVER_ERROR,
                   message: 'Internal server error',
@@ -154,14 +160,16 @@ const addItemToCart = async (data, userId) => {
               })
           }
         })
-        .catch(() => {
+        .catch(err => {
+          console.log(err)
           return {
             code: INTERNAL_SERVER_ERROR,
             message: 'Internal server error',
           }
         })
     })
-    .catch(() => {
+    .catch(err => {
+      console.log(err)
       return {
         code: INTERNAL_SERVER_ERROR,
         message: 'Internal server error',
@@ -224,7 +232,9 @@ const removeItemFromCart = async itemId => {
 }
 const findUserCart = async userId => {
   return await db
-    .query('SELECT * FROM tb_cart WHERE userId = ?', [userId])
+    .query('SELECT * FROM tb_cart WHERE userId = ? AND isCheckout = 0', [
+      userId,
+    ])
     .then(async c => {
       const cRow = c[0]
 

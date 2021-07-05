@@ -65,7 +65,9 @@ export const findUsers = async (page = 1, size = 10) => {
 
 export const findUsersName = async () => {
   return await db
-    .query('SELECT userId, name, username FROM tb_users')
+    .query(
+      'SELECT userId, name,email, username FROM tb_users WHERE isVerified = 1'
+    )
     .then(result => {
       const row = result[0]
 

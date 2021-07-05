@@ -31,6 +31,17 @@ import {
 } from './game/game_handler'
 import { detailUser, listNames, listUsers } from './user/user_handler'
 import { addToCart, getUserCart, removeFromCart } from './cart/cart_handler'
+import {
+  acceptTransaction,
+  checkoutTransaction,
+  deleteTransaction,
+  detailTransactionAdmin,
+  detailTransactionUser,
+  listTransactionAdmin,
+  listTransactionUsers,
+  rejectTransaction,
+  uploadTransImage,
+} from './transaction/transaction_handler'
 
 const router = Router()
 
@@ -72,5 +83,35 @@ router.delete('/game/delete/:gameId', verifyTokenAdmin, deleteGameAdmin)
 router.post('/cart/add/item', verifyToken, addToCart)
 router.delete('/cart/remove/item/:itemId', verifyToken, removeFromCart)
 router.get('/cart/user', verifyToken, getUserCart)
+
+router.get('/transaction/checkout', verifyToken, checkoutTransaction)
+router.get('/transaction/list/admin', verifyTokenAdmin, listTransactionAdmin)
+router.get('/transaction/list/users', verifyToken, listTransactionUsers)
+router.get(
+  '/transaction/detail/:transactionId',
+  verifyTokenAdmin,
+  detailTransactionAdmin
+)
+router.get(
+  '/transaction/users/detail/:transactionId',
+  verifyToken,
+  detailTransactionUser
+)
+router.put('/transaction/upload/:transactionId', verifyToken, uploadTransImage)
+router.put(
+  '/transaction/accept/:transactionId',
+  verifyTokenAdmin,
+  acceptTransaction
+)
+router.put(
+  '/transaction/reject/:transactionId',
+  verifyTokenAdmin,
+  rejectTransaction
+)
+router.delete(
+  '/transaction/delete/:transactionId',
+  verifyTokenAdmin,
+  deleteTransaction
+)
 
 export { router }
