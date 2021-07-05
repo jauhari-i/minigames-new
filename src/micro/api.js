@@ -42,6 +42,7 @@ import {
   rejectTransaction,
   uploadTransImage,
 } from './transaction/transaction_handler'
+import { getListCodes } from './code/code_handler'
 
 const router = Router()
 
@@ -113,5 +114,7 @@ router.delete(
   verifyTokenAdmin,
   deleteTransaction
 )
+
+router.get('/codes/list', verifyTokenAdmin, getListCodes)
 
 export { router }

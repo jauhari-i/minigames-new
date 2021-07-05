@@ -939,6 +939,9 @@ const deleteTrans = async transactionId => {
           message: 'Transaction not found',
         }
       } else {
+        if (tRow[0][0].imageId) {
+          await DeleteImage(tRow[0][0].imageId)
+        }
         return await db
           .query('DELETE FROM tb_transaction WHERE transactionId = ?', [
             transactionId,
