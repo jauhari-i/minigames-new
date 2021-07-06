@@ -505,3 +505,89 @@ export const validateReject = async data => {
     }
   }
 }
+
+export const validateJoin = async data => {
+  const rule = {
+    uniqueCode: {
+      presence: { message: 'is required' },
+    },
+  }
+
+  const validation = await validate(data, rule)
+
+  if (validation === undefined) {
+    return {
+      error: false,
+      message: '',
+    }
+  } else if (validation.uniqueCode) {
+    return {
+      error: true,
+      message: validation.uniqueCode[0],
+    }
+  } else {
+    return {
+      error: false,
+      message: '',
+    }
+  }
+}
+
+export const validateSave = async data => {
+  const rule = {
+    codeId: {
+      presence: { message: 'is required' },
+    },
+    time: {
+      presence: { message: 'is required' },
+    },
+    teamName: {
+      presence: { message: 'is required' },
+    },
+    teamIcon: {
+      presence: { message: 'is required' },
+    },
+    uniqueCode: {
+      presence: { message: 'is required' },
+    },
+  }
+
+  const validation = await validate(data, rule)
+
+  if (validation === undefined) {
+    return {
+      error: false,
+      message: '',
+    }
+  } else if (validation.codeId) {
+    return {
+      error: true,
+      message: validation.codeId[0],
+    }
+  } else if (validation.time) {
+    return {
+      error: true,
+      message: validation.time[0],
+    }
+  } else if (validation.teamName) {
+    return {
+      error: true,
+      message: validation.teamName[0],
+    }
+  } else if (validation.teamIcon) {
+    return {
+      error: true,
+      message: validation.teamIcon[0],
+    }
+  } else if (validation.uniqueCode) {
+    return {
+      error: true,
+      message: validation.uniqueCode[0],
+    }
+  } else {
+    return {
+      error: false,
+      message: '',
+    }
+  }
+}

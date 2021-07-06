@@ -43,6 +43,7 @@ import {
   uploadTransImage,
 } from './transaction/transaction_handler'
 import { getListCodes } from './code/code_handler'
+import { joinGame, saveGame } from './gameplay/gameplay_handler'
 
 const router = Router()
 
@@ -116,5 +117,8 @@ router.delete(
 )
 
 router.get('/codes/list', verifyTokenAdmin, getListCodes)
+
+router.post('/gameplay/join', verifyToken, joinGame)
+router.post('/gameplay/save', verifyToken, saveGame)
 
 export { router }

@@ -16,7 +16,6 @@ export const findCode = async (page = 1, size = 10) => {
         .then(async codeRow => {
           const codes = await Promise.all(
             codeRow[0].map(async item => {
-              console.log(item)
               const members = await db
                 .query(
                   'SELECT tb_members.*, tb_users.name, tb_users.email, tb_users.username FROM tb_members INNER JOIN tb_users ON tb_members.userId=tb_users.userId WHERE itemId = ?',
