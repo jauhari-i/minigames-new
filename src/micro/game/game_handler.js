@@ -6,6 +6,7 @@ import {
   updateGame,
   deleteGame,
   updateStatus,
+  findGameWeb,
 } from './game_query'
 
 import { validateGame, validateUpdateGame } from '../validation'
@@ -49,6 +50,7 @@ export const listGameAdmin = async (req, res) => {
     return res.status(query.code).json(query)
   }
 }
+
 export const detailGameAdmin = async (req, res) => {
   const {
     params: { gameId },
@@ -113,6 +115,23 @@ export const updateGameStatus = async (req, res) => {
   } = req
 
   const query = await updateStatus(gameId, status)
+  if (!query.code) {
+    return res.status(INTERNAL_SERVER_ERROR).json({
+      code: INTERNAL_SERVER_ERROR,
+      message: 'Internal server error',
+    })
+  } else {
+    return res.status(query.code).json(query)
+  }
+}
+
+export const listGameUsers = async (req, res) => {
+  const {
+    userId,
+    query: { page = 1, size = 10 },
+  } = req
+
+  const query = await findGameWeb(userId, page, size)
   if (!query.code) {
     return res.status(INTERNAL_SERVER_ERROR).json({
       code: INTERNAL_SERVER_ERROR,

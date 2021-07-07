@@ -213,10 +213,11 @@ export const saveQuery = async (userId, data) => {
 
               return await db
                 .query(
-                  'INSERT INTO tb_leaderboard (leaderboardId, mgId, teamName, teamIcon, score, userId) VALUES (?,?,?,?,?,?)',
+                  'INSERT INTO tb_leaderboard (leaderboardId, mgId, gameId, teamName, teamIcon, score, userId) VALUES (?,?,?,?,?,?)',
                   [
                     leaderboardId,
                     userGame[0].mgId,
+                    userGame[0].gameId,
                     data.teamName,
                     data.teamIcon,
                     data.time,

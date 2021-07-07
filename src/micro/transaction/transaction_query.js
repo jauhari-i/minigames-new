@@ -248,7 +248,7 @@ const findTransactionAdmin = async (page = 1, size = 10) => {
               const meta = {
                 page: Number(page),
                 size: Number(size),
-                totalData: t.length,
+                totalData: transCount,
                 totalPage,
               }
               return {
@@ -402,7 +402,7 @@ const findTransactionUsers = async (page = 1, size = 10, userId) => {
               const meta = {
                 page: Number(page),
                 size: Number(size),
-                totalData: t.length,
+                totalData: transCount,
                 totalPage,
               }
               return {

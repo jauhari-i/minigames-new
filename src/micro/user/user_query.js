@@ -38,7 +38,7 @@ export const findUsers = async (page = 1, size = 10) => {
           const meta = {
             page: Number(page),
             size: Number(size),
-            totalData: data.length,
+            totalData: userRows,
             totalPage,
           }
 

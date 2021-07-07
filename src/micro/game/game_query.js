@@ -43,7 +43,7 @@ const findGame = async (page = 1, size = 10) => {
           const meta = {
             page: Number(page),
             size: Number(size),
-            totalData: data.length,
+            totalData: gameRows,
             totalPage,
           }
 
@@ -71,7 +71,126 @@ const findGame = async (page = 1, size = 10) => {
     })
 }
 
-// const findGameWeb = async userId => {}
+const findGameWeb = async (userId, page = 1, size = 10) => {
+  const skip = (page - 1) * size
+  const limit = skip + ',' + size
+
+  return db
+    .query(
+      'SELECT tb_user_game.*, tb_game.*, tb_image.secure_url, tb_users.name, tb_users.email, tb_users.username, tb_code.uniqueCode, tb_transaction_item.itemId, tb_items.timeStart, tb_items.timeEnd FROM tb_user_game INNER JOIN tb_game ON tb_user_game.gameId=tb_game.gameId INNER JOIN tb_users ON tb_user_game.userId=tb_users.userId INNER JOIN tb_image ON tb_game.imageId = tb_image.imageId INNER JOIN tb_code ON tb_user_game.codeId = tb_code.codeId INNER JOIN tb_transaction_item ON tb_code.trItemId = tb_transaction_item.trItemId INNER JOIN tb_items ON tb_transaction_item.itemId=tb_items.itemId WHERE tb_user_game.userId = ? AND tb_user_game.isExpired = 0 AND tb_user_game.isPlayed = 0 ORDER BY tb_user_game.createdAt DESC LIMIT ' +
+        limit,
+      [userId]
+    )
+    .then(async dats => {
+      const gRows = dats[0]
+
+      const updateIsExpired = async mgId => {
+        await db.query('UPDATE tb_user_game SET ? WHERE mgId = ?', [
+          { isExpired: 1 },
+          mgId,
+        ])
+      }
+
+      const data = await Promise.all(
+        gRows.map(async i => {
+          const today = new Date()
+          const playDt = new Date(i.playingDate)
+
+          let expired
+
+          if (today > playDt) {
+            await updateIsExpired(i.mgId)
+            expired = true
+          } else {
+            expired = false
+          }
+
+          const members = await db
+            .query(
+              'SELECT tb_members.*, tb_users.name, tb_users.email, tb_users.username FROM tb_members INNER JOIN tb_users ON tb_members.userId=tb_users.userId WHERE itemId = ?',
+              [i.itemId]
+            )
+            .then(res => {
+              const memRow = res[0]
+              const users = memRow.map(m => ({
+                memberId: m.memberId,
+                userId: m.userId,
+                name: m.name,
+                email: m.email,
+                username: m.username,
+              }))
+              return users
+            })
+            .catch(() => {
+              return []
+            })
+
+          return {
+            mgId: i.mgId,
+            gameDetail: {
+              gameId: i.gameId,
+              gameTitle: i.gameTitle,
+              gameDescription: i.gameDescription,
+              gamePrice: i.gamePrice,
+              gameDiscount: i.gameDiscount,
+              gamePriceAfterDisc: i.gamePriceAfterDisc,
+              gameDifficulty: i.gameDiff,
+              gameDuration: i.gameDuration,
+              gameRating: i.gameRating,
+              gameUrl: i.gameUrl,
+              gameCapacity: i.gameCapacity,
+              gameActive: i.gameActive === 0 ? false : true,
+              gameGenre: JSON.parse(i.gameGenre),
+              gameImage: i.secure_url,
+            },
+            codeId: i.codeId,
+            isExpired: expired,
+            userDetail: {
+              userId: i.userId,
+              name: i.name,
+              email: i.email,
+              username: i.username,
+            },
+            playingDate: i.playingDate,
+            timeStart: i.timeStart,
+            timeEnd: i.timeEnd,
+            members,
+            createdAt: i.createdAt,
+          }
+        })
+      )
+
+      const counts = await db
+        .query(
+          'SELECT COUNT(*) AS total FROM tb_user_game WHERE tb_user_game.userId = ? AND tb_user_game.isExpired = 0 AND tb_user_game.isPlayed = 0',
+          [userId]
+        )
+        .then(c => {
+          return c[0][0].total
+        })
+        .catch(() => {
+          return 0
+        })
+
+      const totalPage = Math.ceil(counts / size)
+
+      const meta = {
+        page: Number(page),
+        size: Number(size),
+        totalData: counts,
+        totalPage,
+      }
+
+      return {
+        code: OK,
+        message: 'Get game success',
+        data: {
+          data: data,
+          meta,
+        },
+      }
+    })
+}
 
 const findGameById = async gameId => {
   return await db
@@ -350,6 +469,7 @@ const updateStatus = async (gameId, status) => {
 export {
   findGame,
   findGameById,
+  findGameWeb,
   insertGame,
   updateGame,
   deleteGame,

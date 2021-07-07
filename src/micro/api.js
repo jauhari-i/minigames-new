@@ -28,6 +28,7 @@ import {
   updateGameAdmin,
   deleteGameAdmin,
   updateGameStatus,
+  listGameUsers,
 } from './game/game_handler'
 import { detailUser, listNames, listUsers } from './user/user_handler'
 import { addToCart, getUserCart, removeFromCart } from './cart/cart_handler'
@@ -44,6 +45,8 @@ import {
 } from './transaction/transaction_handler'
 import { getListCodes } from './code/code_handler'
 import { joinGame, saveGame } from './gameplay/gameplay_handler'
+import { getLeaderboard } from './leaderboard/leaderboard_handler'
+import { getDashboard } from './dashboard/dashboard_handler'
 
 const router = Router()
 
@@ -72,7 +75,9 @@ router.get('/verify/:token', basicAuth, verifyUser)
 router.get('/request/email/:token', basicAuth, requestVerification)
 
 router.post('/game/add', verifyTokenAdmin, addGame)
+router.get('/game/list/users', verifyToken, listGameUsers)
 router.get('/game/list/admin', verifyTokenAdmin, listGameAdmin)
+router.get('/game/list/web', verifyToken, listGameAdmin)
 router.get('/game/detail/:gameId', verifyTokenAdmin, detailGameAdmin)
 router.put('/game/update/:gameId', verifyTokenAdmin, updateGameAdmin)
 router.put(
@@ -120,5 +125,10 @@ router.get('/codes/list', verifyTokenAdmin, getListCodes)
 
 router.post('/gameplay/join', verifyToken, joinGame)
 router.post('/gameplay/save', verifyToken, saveGame)
+
+router.get('/leaderboard/list/users/:gameId', verifyToken, getLeaderboard)
+router.get('/leaderboard/list/admin/:gameId', verifyTokenAdmin, getLeaderboard)
+
+router.get('/dashboard/admin', verifyTokenAdmin, getDashboard)
 
 export { router }
